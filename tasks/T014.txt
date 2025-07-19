@@ -1,0 +1,29 @@
+{
+  "id": "T014",
+  "title": "Home Page Implementation",
+  "description": "Create the main dashboard home page with user info and animations",
+  "phase": "phase5",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "60 minutes",
+  "dependencies": ["T010", "T013"],
+  "subtasks": [
+    "Create home page layout with profile section",
+    "Add user info display (name, age, qualities)",
+    "Implement name slide-up animation", 
+    "Add rotating qualities animation",
+    "Create skills section with pill tags",
+    "Add recent achievements section (top 3)",
+    "Add action buttons for Projects and Participations"
+  ],
+  "acceptanceCriteria": [
+    "Page displays user profile information correctly",
+    "Animations work smoothly on page load",
+    "Recent achievements are fetched and displayed",
+    "Action buttons navigate to correct pages"
+  ],
+  "files": [
+    "app/(dashboard)/home/page.tsx",
+    "components/animations/TextAnimation.tsx"
+  ]
+} 

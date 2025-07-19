@@ -1,0 +1,26 @@
+{
+  "id": "T023",
+  "title": "Project Form Component",
+  "description": "Create form for adding projects with image upload",
+  "phase": "phase6",
+  "priority": "high", 
+  "status": "pending",
+  "estimatedTime": "55 minutes",
+  "dependencies": ["T021"],
+  "subtasks": [
+    "Create project form with required fields",
+    "Add banner image upload functionality",
+    "Add project description with character limit",
+    "Add GitHub link validation", 
+    "Add team member functionality",
+    "Style consistently with other forms"
+  ],
+  "acceptanceCriteria": [
+    "Form captures all project information",
+    "Image upload works for project banners",
+    "GitHub URL validation works correctly"
+  ],
+  "files": [
+    "components/forms/ProjectForm.tsx"
+  ]
+} 

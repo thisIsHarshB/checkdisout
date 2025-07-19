@@ -1,0 +1,26 @@
+{
+  "id": "T015",
+  "title": "Achievement Card Component",
+  "description": "Create reusable card component for displaying achievements",
+  "phase": "phase5",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "45 minutes",
+  "dependencies": ["T008", "T013"],
+  "subtasks": [
+    "Create AchievementCard component with all required fields",
+    "Add conditional rendering for online/offline events",
+    "Add team members display when not solo",
+    "Add action buttons (Delete, Edit, Share)",
+    "Style with dark theme and proper spacing",
+    "Add certificate viewing functionality"
+  ],
+  "acceptanceCriteria": [
+    "Card displays all achievement information correctly",
+    "Conditional fields show based on data",
+    "Action buttons are properly styled and functional"
+  ],
+  "files": [
+    "components/cards/AchievementCard.tsx"
+  ]
+} 

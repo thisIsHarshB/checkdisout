@@ -1,0 +1,27 @@
+{
+  "id": "T004",
+  "title": "Authentication Context Setup",
+  "description": "Create React Context for authentication state management",
+  "phase": "phase2",
+  "priority": "critical",
+  "status": "pending", 
+  "estimatedTime": "35 minutes",
+  "dependencies": ["T002", "T003"],
+  "subtasks": [
+    "Create AuthContext with login/logout functions",
+    "Implement Firebase Auth methods (email/password, Google)",
+    "Add authentication state management",
+    "Create useAuth custom hook",
+    "Add loading and error states"
+  ],
+  "acceptanceCriteria": [
+    "AuthContext provides user state",
+    "Login/logout functions work",
+    "Authentication persists on page refresh"
+  ],
+  "files": [
+    "lib/context/AuthContext.tsx",
+    "lib/hooks/useAuth.ts",
+    "lib/firebase/auth.ts"
+  ]
+} 

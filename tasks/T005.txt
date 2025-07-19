@@ -1,0 +1,24 @@
+{
+  "id": "T005",
+  "title": "Auth Guard Component",
+  "description": "Create component to protect authenticated routes",
+  "phase": "phase2",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "20 minutes", 
+  "dependencies": ["T004"],
+  "subtasks": [
+    "Create AuthGuard component",
+    "Add redirect logic for unauthenticated users", 
+    "Add loading state during auth check",
+    "Integrate with dashboard layout"
+  ],
+  "acceptanceCriteria": [
+    "Unauthenticated users redirected to login",
+    "Loading state shown during auth check",
+    "Authenticated users can access protected routes"
+  ],
+  "files": [
+    "components/layout/AuthGuard.tsx"
+  ]
+} 

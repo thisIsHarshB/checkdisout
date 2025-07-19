@@ -1,0 +1,28 @@
+{
+  "id": "T035",
+  "title": "Animation Enhancements",
+  "description": "Add polished animations and micro-interactions",
+  "phase": "phase8",
+  "priority": "medium",
+  "status": "pending",
+  "estimatedTime": "55 minutes",
+  "dependencies": ["T014"],
+  "subtasks": [
+    "Enhance home page animations (name slide-up, qualities rotation)",
+    "Add hover animations to cards and buttons",
+    "Add smooth transitions between pages",
+    "Add loading animations for form submissions",
+    "Add micro-interactions for better UX",
+    "Add fade-in animations for modals"
+  ],
+  "acceptanceCriteria": [
+    "Animations enhance user experience without being distracting",
+    "Transitions are smooth and professional",
+    "Performance remains good with animations"
+  ],
+  "files": [
+    "app/globals.css",
+    "components/animations/TextAnimation.tsx",
+    "Update existing components with animation classes"
+  ]
+} 

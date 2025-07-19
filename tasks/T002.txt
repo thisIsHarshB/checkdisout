@@ -1,0 +1,26 @@
+{
+  "id": "T002", 
+  "title": "Firebase Configuration Setup",
+  "description": "Configure Firebase project connection and create configuration files",
+  "phase": "phase1",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "20 minutes",
+  "dependencies": ["T001"],
+  "subtasks": [
+    "Create lib/firebase/config.ts with Firebase initialization",
+    "Setup environment variables in .env.local",
+    "Create Firebase project and get configuration keys",
+    "Configure Firestore and Storage in Firebase console"
+  ],
+  "acceptanceCriteria": [
+    "Firebase connection established",
+    "Environment variables configured",
+    "Firestore database created"
+  ],
+  "files": [
+    "lib/firebase/config.ts",
+    ".env.local",
+    ".env.example"
+  ]
+} 

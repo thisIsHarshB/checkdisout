@@ -1,0 +1,25 @@
+{
+  "id": "T013",
+  "title": "User Data Context Setup",
+  "description": "Create context for managing user's portfolio data",
+  "phase": "phase4",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "40 minutes",
+  "dependencies": ["T011", "T004"],
+  "subtasks": [
+    "Create UserDataContext for portfolio data",
+    "Add state management for achievements, participations, projects",
+    "Implement real-time data synchronization",
+    "Add loading and error states",
+    "Create custom hook for consuming context"
+  ],
+  "acceptanceCriteria": [
+    "Context provides all user portfolio data",
+    "Real-time updates work when data changes", 
+    "Loading and error states are properly managed"
+  ],
+  "files": [
+    "lib/context/UserDataContext.tsx"
+  ]
+} 

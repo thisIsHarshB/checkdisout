@@ -1,0 +1,24 @@
+{
+  "id": "T017",
+  "title": "Participation Card Component",
+  "description": "Create card component for displaying participations (similar to achievements)",
+  "phase": "phase5",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "35 minutes",
+  "dependencies": ["T015"],
+  "subtasks": [
+    "Create ParticipationCard based on AchievementCard",
+    "Remove position field (participations don't have rankings)",
+    "Keep all other functionality identical",
+    "Style consistently with achievement cards"
+  ],
+  "acceptanceCriteria": [
+    "Card displays participation information correctly",
+    "Styling is consistent with achievement cards",
+    "All action buttons work properly"
+  ],
+  "files": [
+    "components/cards/ParticipationCard.tsx"
+  ]
+} 

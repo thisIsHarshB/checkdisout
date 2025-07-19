@@ -1,0 +1,1202 @@
+{
+  "project": "CheckDisOut - Achievement Aggregator Web App",
+  "totalTasks": 45,
+  "phases": {
+    "phase1": "Setup & Foundation",
+    "phase2": "Authentication System", 
+    "phase3": "Core Components",
+    "phase4": "Data Management",
+    "phase5": "Main Pages",
+    "phase6": "Advanced Features",
+    "phase7": "PDF Export",
+    "phase8": "Polish & Deployment"
+  },
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "Project Setup and Configuration",
+      "description": "Initialize NextJS 14 project with required dependencies and basic configuration",
+      "phase": "phase1",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "30 minutes",
+      "dependencies": [],
+      "subtasks": [
+        "Create NextJS 14 project with App Router",
+        "Install dependencies: firebase, lucide-react, @react-pdf/renderer, tailwindcss",
+        "Configure tailwind.config.js with custom colors and fonts",
+        "Setup globals.css with font imports",
+        "Create basic folder structure in app/ and components/"
+      ],
+      "acceptanceCriteria": [
+        "Project runs with npm run dev",
+        "TailwindCSS working with custom colors",
+        "All dependencies installed successfully"
+      ],
+      "files": [
+        "package.json",
+        "tailwind.config.js", 
+        "app/globals.css",
+        "next.config.js"
+      ]
+    },
+    {
+      "id": "T002", 
+      "title": "Firebase Configuration Setup",
+      "description": "Configure Firebase project connection and create configuration files",
+      "phase": "phase1",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "20 minutes",
+      "dependencies": ["T001"],
+      "subtasks": [
+        "Create lib/firebase/config.ts with Firebase initialization",
+        "Setup environment variables in .env.local",
+        "Create Firebase project and get configuration keys",
+        "Configure Firestore and Storage in Firebase console"
+      ],
+      "acceptanceCriteria": [
+        "Firebase connection established",
+        "Environment variables configured",
+        "Firestore database created"
+      ],
+      "files": [
+        "lib/firebase/config.ts",
+        ".env.local",
+        ".env.example"
+      ]
+    },
+    {
+      "id": "T003",
+      "title": "TypeScript Types Definition",
+      "description": "Create comprehensive TypeScript interfaces for all data models",
+      "phase": "phase1", 
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "25 minutes",
+      "dependencies": ["T001"],
+      "subtasks": [
+        "Define User interface with all profile fields",
+        "Define Achievement interface with team member types",
+        "Define Participation interface",
+        "Define Project interface", 
+        "Create utility types for forms and components"
+      ],
+      "acceptanceCriteria": [
+        "All data models have TypeScript interfaces",
+        "Types are properly exported and importable",
+        "No TypeScript errors in type definitions"
+      ],
+      "files": [
+        "lib/types/index.ts"
+      ]
+    },
+    {
+      "id": "T004",
+      "title": "Authentication Context Setup",
+      "description": "Create React Context for authentication state management",
+      "phase": "phase2",
+      "priority": "critical",
+      "status": "pending", 
+      "estimatedTime": "35 minutes",
+      "dependencies": ["T002", "T003"],
+      "subtasks": [
+        "Create AuthContext with login/logout functions",
+        "Implement Firebase Auth methods (email/password, Google)",
+        "Add authentication state management",
+        "Create useAuth custom hook",
+        "Add loading and error states"
+      ],
+      "acceptanceCriteria": [
+        "AuthContext provides user state",
+        "Login/logout functions work",
+        "Authentication persists on page refresh"
+      ],
+      "files": [
+        "lib/context/AuthContext.tsx",
+        "lib/hooks/useAuth.ts",
+        "lib/firebase/auth.ts"
+      ]
+    },
+    {
+      "id": "T005",
+      "title": "Auth Guard Component",
+      "description": "Create component to protect authenticated routes",
+      "phase": "phase2",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "20 minutes", 
+      "dependencies": ["T004"],
+      "subtasks": [
+        "Create AuthGuard component",
+        "Add redirect logic for unauthenticated users", 
+        "Add loading state during auth check",
+        "Integrate with dashboard layout"
+      ],
+      "acceptanceCriteria": [
+        "Unauthenticated users redirected to login",
+        "Loading state shown during auth check",
+        "Authenticated users can access protected routes"
+      ],
+      "files": [
+        "components/layout/AuthGuard.tsx"
+      ]
+    },
+    {
+      "id": "T006",
+      "title": "Login Page Implementation",
+      "description": "Create login page with email/password and Google OAuth",
+      "phase": "phase2",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "40 minutes",
+      "dependencies": ["T004"],
+      "subtasks": [
+        "Create login page with form validation",
+        "Add email/password authentication",
+        "Add Google OAuth button",
+        "Style with dark theme and custom colors",
+        "Add error handling and loading states",
+        "Add link to register page"
+      ],
+      "acceptanceCriteria": [
+        "Users can login with email/password",
+        "Google OAuth works correctly",
+        "Form validation shows appropriate errors",
+        "Successful login redirects to /home"
+      ],
+      "files": [
+        "app/(auth)/login/page.tsx",
+        "app/(auth)/layout.tsx"
+      ]
+    },
+    {
+      "id": "T007",
+      "title": "Register Page Implementation", 
+      "description": "Create registration page with form validation",
+      "phase": "phase2",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "35 minutes",
+      "dependencies": ["T006"],
+      "subtasks": [
+        "Create register page with form fields",
+        "Add form validation (email format, password strength)",
+        "Implement user registration logic",
+        "Style consistently with login page",
+        "Add error handling",
+        "Add link to login page"
+      ],
+      "acceptanceCriteria": [
+        "Users can register with email/password",
+        "Form validation prevents invalid submissions", 
+        "User profile created in Firestore after registration",
+        "Successful registration redirects to profile setup"
+      ],
+      "files": [
+        "app/(auth)/register/page.tsx"
+      ]
+    },
+    {
+      "id": "T008",
+      "title": "Base UI Components",
+      "description": "Create reusable UI components with consistent styling",
+      "phase": "phase3",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "45 minutes",
+      "dependencies": ["T001"],
+      "subtasks": [
+        "Create Button component with variants (primary, secondary, danger)",
+        "Create Input component with validation states", 
+        "Create Card component with dark theme styling",
+        "Create Modal component with backdrop",
+        "Create FileUpload component with drag & drop"
+      ],
+      "acceptanceCriteria": [
+        "All components styled with custom color palette",
+        "Components accept proper props and handle states",
+        "Components are reusable across the app"
+      ],
+      "files": [
+        "components/ui/Button.tsx",
+        "components/ui/Input.tsx", 
+        "components/ui/Card.tsx",
+        "components/ui/Modal.tsx",
+        "components/ui/FileUpload.tsx"
+      ]
+    },
+    {
+      "id": "T009",
+      "title": "Vertical Navbar Component",
+      "description": "Create the main navigation sidebar with CDO logo and menu items",
+      "phase": "phase3",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "40 minutes",
+      "dependencies": ["T008"],
+      "subtasks": [
+        "Create fixed vertical navbar with dark background",
+        "Add CDO logo at top with Space Grotesk font",
+        "Add navigation items with Lucide icons",
+        "Implement active state highlighting",
+        "Add responsive behavior (collapse on mobile)",
+        "Add logout functionality"
+      ],
+      "acceptanceCriteria": [
+        "Navbar is fixed and spans full height",
+        "All navigation items work correctly", 
+        "Active page is visually highlighted",
+        "Icons from Lucide React are properly displayed"
+      ],
+      "files": [
+        "components/layout/Navbar.tsx"
+      ]
+    },
+    {
+      "id": "T010",
+      "title": "Dashboard Layout Setup",
+      "description": "Create the main dashboard layout with navbar and content area",
+      "phase": "phase3",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "25 minutes",
+      "dependencies": ["T009", "T005"],
+      "subtasks": [
+        "Create dashboard layout component",
+        "Integrate Navbar and AuthGuard",
+        "Setup content area with proper spacing",
+        "Make layout responsive",
+        "Add loading states"
+      ],
+      "acceptanceCriteria": [
+        "Layout properly displays navbar and content",
+        "Content area adjusts based on navbar width", 
+        "Layout is responsive on mobile devices"
+      ],
+      "files": [
+        "app/(dashboard)/layout.tsx"
+      ]
+    },
+    {
+      "id": "T011",
+      "title": "Firestore Database Helpers",
+      "description": "Create helper functions for Firestore database operations",
+      "phase": "phase4",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "50 minutes",
+      "dependencies": ["T002", "T003"],
+      "subtasks": [
+        "Create CRUD operations for users collection",
+        "Create CRUD operations for achievements collection",
+        "Create CRUD operations for participations collection",
+        "Create CRUD operations for projects collection",
+        "Add error handling and type safety",
+        "Add real-time listeners setup"
+      ],
+      "acceptanceCriteria": [
+        "All CRUD operations work with proper TypeScript types",
+        "Error handling implemented for network failures",
+        "Functions return consistent response formats"
+      ],
+      "files": [
+        "lib/firebase/firestore.ts",
+        "lib/hooks/useFirestore.ts"
+      ]
+    },
+    {
+      "id": "T012",
+      "title": "Firebase Storage Integration",
+      "description": "Setup file upload functionality for certificates and images",
+      "phase": "phase4",
+      "priority": "high",
+      "status": "pending", 
+      "estimatedTime": "35 minutes",
+      "dependencies": ["T002"],
+      "subtasks": [
+        "Create file upload functions for certificates",
+        "Create image upload functions for profile pictures and project banners",
+        "Add file validation (type, size)",
+        "Add progress tracking for uploads",
+        "Create file deletion functions"
+      ],
+      "acceptanceCriteria": [
+        "Files upload successfully to Firebase Storage",
+        "File validation prevents invalid uploads",
+        "Upload progress is tracked and displayed"
+      ],
+      "files": [
+        "lib/firebase/storage.ts",
+        "lib/hooks/useStorage.ts"
+      ]
+    },
+    {
+      "id": "T013",
+      "title": "User Data Context Setup",
+      "description": "Create context for managing user's portfolio data",
+      "phase": "phase4",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "40 minutes",
+      "dependencies": ["T011", "T004"],
+      "subtasks": [
+        "Create UserDataContext for portfolio data",
+        "Add state management for achievements, participations, projects",
+        "Implement real-time data synchronization",
+        "Add loading and error states",
+        "Create custom hook for consuming context"
+      ],
+      "acceptanceCriteria": [
+        "Context provides all user portfolio data",
+        "Real-time updates work when data changes", 
+        "Loading and error states are properly managed"
+      ],
+      "files": [
+        "lib/context/UserDataContext.tsx"
+      ]
+    },
+    {
+      "id": "T014",
+      "title": "Home Page Implementation",
+      "description": "Create the main dashboard home page with user info and animations",
+      "phase": "phase5",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "60 minutes",
+      "dependencies": ["T010", "T013"],
+      "subtasks": [
+        "Create home page layout with profile section",
+        "Add user info display (name, age, qualities)",
+        "Implement name slide-up animation", 
+        "Add rotating qualities animation",
+        "Create skills section with pill tags",
+        "Add recent achievements section (top 3)",
+        "Add action buttons for Projects and Participations"
+      ],
+      "acceptanceCriteria": [
+        "Page displays user profile information correctly",
+        "Animations work smoothly on page load",
+        "Recent achievements are fetched and displayed",
+        "Action buttons navigate to correct pages"
+      ],
+      "files": [
+        "app/(dashboard)/home/page.tsx",
+        "components/animations/TextAnimation.tsx"
+      ]
+    },
+    {
+      "id": "T015",
+      "title": "Achievement Card Component",
+      "description": "Create reusable card component for displaying achievements",
+      "phase": "phase5",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "45 minutes",
+      "dependencies": ["T008", "T013"],
+      "subtasks": [
+        "Create AchievementCard component with all required fields",
+        "Add conditional rendering for online/offline events",
+        "Add team members display when not solo",
+        "Add action buttons (Delete, Edit, Share)",
+        "Style with dark theme and proper spacing",
+        "Add certificate viewing functionality"
+      ],
+      "acceptanceCriteria": [
+        "Card displays all achievement information correctly",
+        "Conditional fields show based on data",
+        "Action buttons are properly styled and functional"
+      ],
+      "files": [
+        "components/cards/AchievementCard.tsx"
+      ]
+    },
+    {
+      "id": "T016",
+      "title": "Achievements Page Implementation",
+      "description": "Create page to display all user achievements in grid layout",
+      "phase": "phase5",
+      "priority": "critical", 
+      "status": "pending",
+      "estimatedTime": "35 minutes",
+      "dependencies": ["T015"],
+      "subtasks": [
+        "Create achievements page with grid layout",
+        "Implement responsive design (2 cards desktop, 1 mobile)",
+        "Add loading states and skeleton loaders",
+        "Add empty state when no achievements",
+        "Integrate with UserDataContext for real-time updates"
+      ],
+      "acceptanceCriteria": [
+        "Page displays achievements in proper grid layout",
+        "Loading states show while data is fetching",
+        "Empty state displays helpful message when no data"
+      ],
+      "files": [
+        "app/(dashboard)/achievements/page.tsx"
+      ]
+    },
+    {
+      "id": "T017",
+      "title": "Participation Card Component",
+      "description": "Create card component for displaying participations (similar to achievements)",
+      "phase": "phase5",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "35 minutes",
+      "dependencies": ["T015"],
+      "subtasks": [
+        "Create ParticipationCard based on AchievementCard",
+        "Remove position field (participations don't have rankings)",
+        "Keep all other functionality identical",
+        "Style consistently with achievement cards"
+      ],
+      "acceptanceCriteria": [
+        "Card displays participation information correctly",
+        "Styling is consistent with achievement cards",
+        "All action buttons work properly"
+      ],
+      "files": [
+        "components/cards/ParticipationCard.tsx"
+      ]
+    },
+    {
+      "id": "T018",
+      "title": "Participations Page Implementation",
+      "description": "Create page to display all user participations",
+      "phase": "phase5",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "30 minutes",
+      "dependencies": ["T017"],
+      "subtasks": [
+        "Create participations page with grid layout",
+        "Use same layout structure as achievements page",
+        "Integrate with UserDataContext",
+        "Add appropriate loading and empty states"
+      ],
+      "acceptanceCriteria": [
+        "Page functions identically to achievements page",
+        "Displays participations data correctly"
+      ],
+      "files": [
+        "app/(dashboard)/participations/page.tsx"
+      ]
+    },
+    {
+      "id": "T019",
+      "title": "Project Card Component",
+      "description": "Create card component for displaying projects with banner images",
+      "phase": "phase5",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "40 minutes",
+      "dependencies": ["T015"],
+      "subtasks": [
+        "Create ProjectCard component with larger layout",
+        "Add project banner image display",
+        "Add project name and description",
+        "Add GitHub link with external link icon",
+        "Add team members section if applicable",
+        "Style for single-column layout"
+      ],
+      "acceptanceCriteria": [
+        "Card displays project information with banner image",
+        "Description text is readable and properly formatted",
+        "GitHub links open in new tab"
+      ],
+      "files": [
+        "components/cards/ProjectCard.tsx"
+      ]
+    },
+    {
+      "id": "T020", 
+      "title": "Projects Page Implementation",
+      "description": "Create page to display all user projects in single-column layout",
+      "phase": "phase5",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "30 minutes",
+      "dependencies": ["T019"],
+      "subtasks": [
+        "Create projects page with single-column layout",
+        "Implement responsive spacing",
+        "Add loading and empty states",
+        "Integrate with UserDataContext"
+      ],
+      "acceptanceCriteria": [
+        "Projects display in single-column layout",
+        "Page is responsive on all devices",
+        "Loading and empty states work correctly"
+      ],
+      "files": [
+        "app/(dashboard)/projects/page.tsx"
+      ]
+    },
+    {
+      "id": "T021",
+      "title": "Achievement Form Component",
+      "description": "Create comprehensive form for adding achievements",
+      "phase": "phase6",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "70 minutes",
+      "dependencies": ["T008", "T012"],
+      "subtasks": [
+        "Create form with all achievement fields",
+        "Add conditional fields (online/offline, solo/team)",
+        "Implement dynamic team member addition",
+        "Add file upload for certificates",
+        "Add form validation with error messages",
+        "Add loading states for submission"
+      ],
+      "acceptanceCriteria": [
+        "Form captures all required achievement data",
+        "Conditional fields appear based on selections",
+        "File upload works for certificates",
+        "Form validation prevents invalid submissions"
+      ],
+      "files": [
+        "components/forms/AchievementForm.tsx"
+      ]
+    },
+    {
+      "id": "T022",
+      "title": "Participation Form Component",
+      "description": "Create form for adding participations (similar to achievements)",
+      "phase": "phase6",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "50 minutes",
+      "dependencies": ["T021"],
+      "subtasks": [
+        "Create ParticipationForm based on AchievementForm",
+        "Remove position field from form",
+        "Keep all other functionality identical",
+        "Ensure consistent styling and behavior"
+      ],
+      "acceptanceCriteria": [
+        "Form works identically to achievement form",
+        "Position field is not present",
+        "All validation and functionality works"
+      ],
+      "files": [
+        "components/forms/ParticipationForm.tsx"
+      ]
+    },
+    {
+      "id": "T023",
+      "title": "Project Form Component",
+      "description": "Create form for adding projects with image upload",
+      "phase": "phase6",
+      "priority": "high", 
+      "status": "pending",
+      "estimatedTime": "55 minutes",
+      "dependencies": ["T021"],
+      "subtasks": [
+        "Create project form with required fields",
+        "Add banner image upload functionality",
+        "Add project description with character limit",
+        "Add GitHub link validation", 
+        "Add team member functionality",
+        "Style consistently with other forms"
+      ],
+      "acceptanceCriteria": [
+        "Form captures all project information",
+        "Image upload works for project banners",
+        "GitHub URL validation works correctly"
+      ],
+      "files": [
+        "components/forms/ProjectForm.tsx"
+      ]
+    },
+    {
+      "id": "T024",
+      "title": "Add to Portfolio Page Implementation",
+      "description": "Create page with tabbed interface for adding different content types",
+      "phase": "phase6",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "45 minutes",
+      "dependencies": ["T021", "T022", "T023"],
+      "subtasks": [
+        "Create page with tab navigation",
+        "Integrate Achievement, Participation, and Project forms",
+        "Add tab switching functionality",
+        "Add success message and navigation options after submission",
+        "Style tab interface with custom colors"
+      ],
+      "acceptanceCriteria": [
+        "Tabs switch between different forms correctly",
+        "Forms submit and save data properly",
+        "Success flow guides user appropriately"
+      ],
+      "files": [
+        "app/(dashboard)/add-to-portfolio/page.tsx"
+      ]
+    },
+    {
+      "id": "T025",
+      "title": "Profile Form Component",
+      "description": "Create form for editing user profile information",
+      "phase": "phase6",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "60 minutes",
+      "dependencies": ["T008", "T012"],
+      "subtasks": [
+        "Create profile form with all user fields",
+        "Add profile picture upload functionality",
+        "Add qualities array management (add/remove)",
+        "Add skills array management", 
+        "Add social links validation",
+        "Add save/cancel functionality"
+      ],
+      "acceptanceCriteria": [
+        "Form pre-populates with current user data",
+        "All fields are editable and saveable",
+        "Profile picture upload works correctly"
+      ],
+      "files": [
+        "components/forms/ProfileForm.tsx"
+      ]
+    },
+    {
+      "id": "T026",
+      "title": "Profile Page Implementation",
+      "description": "Create user profile page with dropdowns and edit functionality",
+      "phase": "phase6",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "55 minutes", 
+      "dependencies": ["T025"],
+      "subtasks": [
+        "Create profile page layout with user info at top",
+        "Add dropdown sections in alternating colors",
+        "Implement edit mode toggle",
+        "Add read-only sections for achievements/participations/projects", 
+        "Add export button linking to export page",
+        "Style dropdowns with purple/blue alternating pattern"
+      ],
+      "acceptanceCriteria": [
+        "Page displays all user information correctly",
+        "Dropdowns expand/collapse properly",
+        "Edit mode allows inline editing",
+        "Export button navigates correctly"
+      ],
+      "files": [
+        "app/(dashboard)/profile/page.tsx"
+      ]
+    },
+    {
+      "id": "T027",
+      "title": "CRUD Operations Implementation",
+      "description": "Implement edit, delete, and share functionality for all cards",
+      "phase": "phase6",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "70 minutes",
+      "dependencies": ["T015", "T017", "T019"],
+      "subtasks": [
+        "Add inline edit functionality to all card types",
+        "Implement delete confirmation modals",
+        "Add share functionality (copy link to clipboard)",
+        "Add loading states for all operations",
+        "Add error handling and user feedback",
+        "Add optimistic updates for better UX"
+      ],
+      "acceptanceCriteria": [
+        "Edit functionality works inline on cards",
+        "Delete operations show confirmation and work correctly",
+        "Share functionality copies shareable links",
+        "All operations provide appropriate user feedback"
+      ],
+      "files": [
+        "Update existing card components",
+        "components/ui/DeleteModal.tsx",
+        "lib/utils/sharing.ts"
+      ]
+    },
+    {
+      "id": "T028",
+      "title": "Portfolio PDF Component",
+      "description": "Create React-PDF component for generating portfolio PDFs",
+      "phase": "phase7",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "80 minutes",
+      "dependencies": ["T013"],
+      "subtasks": [
+        "Create PortfolioPDF component using React-PDF",
+        "Design professional PDF layout",
+        "Add conditional rendering based on selected sections",
+        "Style PDF to match web app theme",
+        "Add clickable links in PDF",
+        "Add user profile section to PDF"
+      ],
+      "acceptanceCriteria": [
+        "PDF generates with professional layout",
+        "Selected sections appear correctly in PDF",
+        "Links in PDF are clickable",
+        "PDF matches web app styling"
+      ],
+      "files": [
+        "components/pdf/PortfolioPDF.tsx"
+      ]
+    },
+    {
+      "id": "T029",
+      "title": "Export Portfolio Page Implementation", 
+      "description": "Create page for selecting sections and exporting portfolio PDF",
+      "phase": "phase7",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "50 minutes",
+      "dependencies": ["T028"],
+      "subtasks": [
+        "Create export page with section selection interface",
+        "Add checkbox functionality with visual states",
+        "Implement confirm/export button state management",
+        "Add PDF generation and download functionality",
+        "Style with green/red selection indicators",
+        "Add loading states during PDF generation"
+      ],
+      "acceptanceCriteria": [
+        "Users can select/deselect sections to include",
+        "Visual feedback shows selected state",
+        "PDF downloads with selected sections only",
+        "Buttons enable/disable based on confirmation state"
+      ],
+      "files": [
+        "app/(dashboard)/export-portfolio/page.tsx"
+      ]
+    },
+    {
+      "id": "T030",
+      "title": "PDF Generation API Route",
+      "description": "Create API endpoint for server-side PDF generation if needed",
+      "phase": "phase7",
+      "priority": "medium",
+      "status": "pending", 
+      "estimatedTime": "40 minutes",
+      "dependencies": ["T028"],
+      "subtasks": [
+        "Create API route for PDF generation",
+        "Add error handling for PDF generation failures",
+        "Add file cleanup after generation",
+        "Optimize for performance"
+      ],
+      "acceptanceCriteria": [
+        "API generates PDF successfully",
+        "Proper error handling implemented",
+        "Good performance for PDF generation"
+      ],
+      "files": [
+        "app/api/generate-pdf/route.ts"
+      ]
+    },
+    {
+      "id": "T031",
+      "title": "Loading States and Skeletons",
+      "description": "Add comprehensive loading states throughout the application",
+      "phase": "phase8",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "45 minutes",
+      "dependencies": ["T016", "T018", "T020"],
+      "subtasks": [
+        "Create skeleton loader components for cards",
+        "Add loading states to all data fetching operations",
+        "Add button loading states",
+        "Add page-level loading indicators",
+        "Add loading states for file uploads"
+      ],
+      "acceptanceCriteria": [
+        "Loading states appear during data fetching",
+        "Skeleton loaders match actual content layout",
+        "Button loading states prevent double submissions"
+      ],
+      "files": [
+        "components/ui/SkeletonLoader.tsx",
+        "components/ui/LoadingSpinner.tsx"
+      ]
+    },
+    {
+      "id": "T032",
+      "title": "Error Handling and Validation",
+      "description": "Implement comprehensive error handling throughout the app",
+      "phase": "phase8",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "50 minutes",
+      "dependencies": ["T024"],
+      "subtasks": [
+        "Add React Error Boundaries",
+        "Create toast notification system",
+        "Add form validation error messages",
+        "Add network error handling",
+        "Add fallback UI for component errors"
+      ],
+      "acceptanceCriteria": [
+        "Errors are caught and displayed gracefully",
+        "Users receive helpful error messages",
+        "App doesn't crash on errors"
+      ],
+      "files": [
+        "components/ErrorBoundary.tsx",
+        "components/ui/Toast.tsx",
+        "lib/utils/validation.ts"
+      ]
+    },
+    {
+      "id": "T033",
+      "title": "Responsive Design Implementation",
+      "description": "Ensure all components work properly on mobile and tablet devices",
+      "phase": "phase8",
+      "priority": "high",
+      "status": "pending",
+      "estimatedTime": "60 minutes",
+      "dependencies": ["T014", "T026"],
+      "subtasks": [
+        "Test and fix navbar on mobile devices",
+        "Adjust card layouts for mobile",
+        "Fix form layouts on smaller screens",
+        "Test touch interactions",
+        "Adjust spacing and typography for mobile"
+      ],
+      "acceptanceCriteria": [
+        "App works well on mobile devices",
+        "Touch interactions are intuitive", 
+        "Text and buttons are appropriately sized"
+      ],
+      "files": [
+        "Update existing components with responsive classes"
+      ]
+    },
+    {
+      "id": "T034",
+      "title": "Performance Optimization",
+      "description": "Optimize app performance and loading times",
+      "phase": "phase8",
+      "priority": "medium",
+      "status": "pending",
+      "estimatedTime": "40 minutes",
+      "dependencies": ["T031"],
+      "subtasks": [
+        "Implement lazy loading for images",
+        "Add code splitting for heavy components", 
+        "Optimize Firebase queries with pagination",
+        "Add image compression for uploads",
+        "Optimize bundle size"
+      ],
+      "acceptanceCriteria": [
+        "Page load times are under 3 seconds",
+        "Images load efficiently",
+        "App feels snappy and responsive"
+      ],
+      "files": [
+        "Update existing components with optimizations"
+      ]
+    },
+    {
+      "id": "T035",
+      "title": "Animation Enhancements",
+      "description": "Add polished animations and micro-interactions",
+      "phase": "phase8",
+      "priority": "medium",
+      "status": "pending",
+      "estimatedTime": "55 minutes",
+      "dependencies": ["T014"],
+      "subtasks": [
+        "Enhance home page animations (name slide-up, qualities rotation)",
+        "Add hover animations to cards and buttons",
+        "Add smooth transitions between pages",
+        "Add loading animations for form submissions",
+        "Add micro-interactions for better UX",
+        "Add fade-in animations for modals"
+      ],
+      "acceptanceCriteria": [
+        "Animations enhance user experience without being distracting",
+        "Transitions are smooth and professional",
+        "Performance remains good with animations"
+      ],
+      "files": [
+        "app/globals.css",
+        "components/animations/TextAnimation.tsx",
+        "Update existing components with animation classes"
+      ]
+    },
+    {
+      "id": "T036",
+      "title": "Firebase Security Rules Implementation",
+      "description": "Configure Firestore and Storage security rules for data protection",
+      "phase": "phase8",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "30 minutes",
+      "dependencies": ["T011", "T012"],
+      "subtasks": [
+        "Configure Firestore security rules as per PRD specifications",
+        "Configure Firebase Storage security rules",
+        "Test security rules with different user scenarios",
+        "Ensure users can only access their own data",
+        "Add rules for read/write permissions"
+      ],
+      "acceptanceCriteria": [
+        "Users can only access their own data",
+        "Security rules prevent unauthorized access",
+        "Rules are properly tested and working"
+      ],
+      "files": [
+        "firestore.rules",
+        "storage.rules"
+      ]
+    },
+    {
+      "id": "T037",
+      "title": "Environment Configuration and Deployment Setup",
+      "description": "Configure environment variables and prepare for deployment",
+      "phase": "phase8",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "35 minutes",
+      "dependencies": ["T002"],
+      "subtasks": [
+        "Create comprehensive .env.example file",
+        "Setup Vercel deployment configuration",
+        "Configure environment variables for production",
+        "Test Firebase connection in production environment",
+        "Setup domain and SSL if needed"
+      ],
+      "acceptanceCriteria": [
+        "Environment variables are properly configured",
+        "App deploys successfully to Vercel",
+        "Production environment works correctly"
+      ],
+      "files": [
+        ".env.example",
+        "vercel.json",
+        "next.config.js"
+      ]
+    },
+    {
+      "id": "T038",
+      "title": "SEO and Meta Tags Implementation",
+      "description": "Add proper SEO meta tags and optimize for search engines",
+      "phase": "phase8",
+      "priority": "low",
+      "status": "pending",
+      "estimatedTime": "25 minutes",
+      "dependencies": ["T010"],
+      "subtasks": [
+        "Add meta tags to layout.tsx",
+        "Create proper page titles for each route",
+        "Add Open Graph tags for social sharing",
+        "Add favicon and app icons",
+        "Create robots.txt and sitemap"
+      ],
+      "acceptanceCriteria": [
+        "Each page has appropriate meta tags",
+        "Social sharing shows correct preview",
+        "Favicon displays correctly"
+      ],
+      "files": [
+        "app/layout.tsx",
+        "app/robots.txt",
+        "public/favicon.ico"
+      ]
+    },
+    {
+      "id": "T039",
+      "title": "Accessibility Improvements",
+      "description": "Ensure app is accessible to users with disabilities",
+      "phase": "phase8",
+      "priority": "medium",
+      "status": "pending",
+      "estimatedTime": "40 minutes",
+      "dependencies": ["T008"],
+      "subtasks": [
+        "Add proper ARIA labels to interactive elements",
+        "Ensure keyboard navigation works throughout app",
+        "Add focus indicators for keyboard users",
+        "Ensure color contrast meets WCAG standards",
+        "Add alt text to all images",
+        "Test with screen readers"
+      ],
+      "acceptanceCriteria": [
+        "App is navigable using keyboard only",
+        "Screen readers can interpret content correctly",
+        "Color contrast passes WCAG AA standards"
+      ],
+      "files": [
+        "Update existing components with accessibility features"
+      ]
+    },
+    {
+      "id": "T040",
+      "title": "Data Migration and Backup Strategy",
+      "description": "Implement data backup and migration utilities",
+      "phase": "phase8",
+      "priority": "low",
+      "status": "pending",
+      "estimatedTime": "35 minutes",
+      "dependencies": ["T011"],
+      "subtasks": [
+        "Create data export functionality for users",
+        "Add data import validation",
+        "Create backup scripts for development",
+        "Add data migration utilities if needed",
+        "Document data structure for future reference"
+      ],
+      "acceptanceCriteria": [
+        "Users can export their data",
+        "Data integrity is maintained during operations",
+        "Backup procedures are documented"
+      ],
+      "files": [
+        "lib/utils/dataExport.ts",
+        "lib/utils/dataMigration.ts"
+      ]
+    },
+    {
+      "id": "T041",
+      "title": "Testing Setup and Implementation",
+      "description": "Setup testing framework and write essential tests",
+      "phase": "phase8",
+      "priority": "medium",
+      "status": "pending",
+      "estimatedTime": "70 minutes",
+      "dependencies": ["T032"],
+      "subtasks": [
+        "Setup Jest and React Testing Library",
+        "Write unit tests for utility functions",
+        "Write integration tests for forms",
+        "Write component tests for key UI components",
+        "Setup test data and mocks",
+        "Configure test coverage reporting"
+      ],
+      "acceptanceCriteria": [
+        "Critical functions have unit tests",
+        "Forms have integration tests",
+        "Test coverage is reasonable for MVP"
+      ],
+      "files": [
+        "jest.config.js",
+        "__tests__/utils.test.ts",
+        "__tests__/components/forms.test.tsx",
+        "__tests__/pages/home.test.tsx"
+      ]
+    },
+    {
+      "id": "T042",
+      "title": "Documentation and README",
+      "description": "Create comprehensive project documentation",
+      "phase": "phase8",
+      "priority": "medium",
+      "status": "pending",
+      "estimatedTime": "45 minutes",
+      "dependencies": ["T037"],
+      "subtasks": [
+        "Write detailed README.md with setup instructions",
+        "Document environment variables required",
+        "Create user guide for the application",
+        "Document component API and usage",
+        "Add troubleshooting guide",
+        "Document deployment process"
+      ],
+      "acceptanceCriteria": [
+        "README provides clear setup instructions",
+        "Documentation covers all major features",
+        "Troubleshooting guide addresses common issues"
+      ],
+      "files": [
+        "README.md",
+        "SETUP.md",
+        "USER_GUIDE.md",
+        "TROUBLESHOOTING.md"
+      ]
+    },
+    {
+      "id": "T043",
+      "title": "Final Integration Testing",
+      "description": "Comprehensive testing of all features working together",
+      "phase": "phase8",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "60 minutes",
+      "dependencies": ["T041"],
+      "subtasks": [
+        "Test complete user journey from registration to PDF export",
+        "Test all CRUD operations work correctly",
+        "Test file uploads and downloads",
+        "Test responsive design on multiple devices",
+        "Test performance under load",
+        "Test error scenarios and recovery"
+      ],
+      "acceptanceCriteria": [
+        "All user scenarios work end-to-end",
+        "No critical bugs or errors",
+        "App performs well under normal usage"
+      ],
+      "files": [
+        "__tests__/integration/userJourney.test.tsx",
+        "__tests__/integration/crud.test.tsx"
+      ]
+    },
+    {
+      "id": "T044",
+      "title": "Performance Monitoring Setup",
+      "description": "Setup monitoring and analytics for production app",
+      "phase": "phase8",
+      "priority": "low",
+      "status": "pending",
+      "estimatedTime": "30 minutes",
+      "dependencies": ["T037"],
+      "subtasks": [
+        "Setup basic analytics tracking",
+        "Add performance monitoring",
+        "Setup error tracking and reporting",
+        "Add user behavior tracking (privacy compliant)",
+        "Configure monitoring dashboards"
+      ],
+      "acceptanceCriteria": [
+        "Basic metrics are being collected",
+        "Error tracking is working",
+        "Performance can be monitored"
+      ],
+      "files": [
+        "lib/analytics/tracking.ts",
+        "lib/monitoring/performance.ts"
+      ]
+    },
+    {
+      "id": "T045",
+      "title": "Production Launch Preparation",
+      "description": "Final preparations and checks before production launch",
+      "phase": "phase8",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "40 minutes",
+      "dependencies": ["T043", "T044"],
+      "subtasks": [
+        "Final review of all features against PRD requirements",
+        "Security audit and vulnerability check",
+        "Performance optimization final pass",
+        "Create launch checklist and rollback plan",
+        "Setup production monitoring and alerting",
+        "Prepare user onboarding materials"
+      ],
+      "acceptanceCriteria": [
+        "All PRD requirements are met",
+        "Security vulnerabilities are addressed", 
+        "Performance meets specified goals",
+        "Launch plan is ready for execution"
+      ],
+      "files": [
+        "LAUNCH_CHECKLIST.md",
+        "SECURITY_AUDIT.md",
+        "PERFORMANCE_REPORT.md"
+      ]
+    }
+  ]
+}

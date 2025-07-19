@@ -1,0 +1,23 @@
+{
+  "id": "T018",
+  "title": "Participations Page Implementation",
+  "description": "Create page to display all user participations",
+  "phase": "phase5",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "30 minutes",
+  "dependencies": ["T017"],
+  "subtasks": [
+    "Create participations page with grid layout",
+    "Use same layout structure as achievements page",
+    "Integrate with UserDataContext",
+    "Add appropriate loading and empty states"
+  ],
+  "acceptanceCriteria": [
+    "Page functions identically to achievements page",
+    "Displays participations data correctly"
+  ],
+  "files": [
+    "app/(dashboard)/participations/page.tsx"
+  ]
+} 

@@ -1,0 +1,25 @@
+{
+  "id": "T010",
+  "title": "Dashboard Layout Setup",
+  "description": "Create the main dashboard layout with navbar and content area",
+  "phase": "phase3",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "25 minutes",
+  "dependencies": ["T009", "T005"],
+  "subtasks": [
+    "Create dashboard layout component",
+    "Integrate Navbar and AuthGuard",
+    "Setup content area with proper spacing",
+    "Make layout responsive",
+    "Add loading states"
+  ],
+  "acceptanceCriteria": [
+    "Layout properly displays navbar and content",
+    "Content area adjusts based on navbar width", 
+    "Layout is responsive on mobile devices"
+  ],
+  "files": [
+    "app/(dashboard)/layout.tsx"
+  ]
+} 

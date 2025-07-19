@@ -1,0 +1,29 @@
+{
+  "id": "T027",
+  "title": "CRUD Operations Implementation",
+  "description": "Implement edit, delete, and share functionality for all cards",
+  "phase": "phase6",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "70 minutes",
+  "dependencies": ["T015", "T017", "T019"],
+  "subtasks": [
+    "Add inline edit functionality to all card types",
+    "Implement delete confirmation modals",
+    "Add share functionality (copy link to clipboard)",
+    "Add loading states for all operations",
+    "Add error handling and user feedback",
+    "Add optimistic updates for better UX"
+  ],
+  "acceptanceCriteria": [
+    "Edit functionality works inline on cards",
+    "Delete operations show confirmation and work correctly",
+    "Share functionality copies shareable links",
+    "All operations provide appropriate user feedback"
+  ],
+  "files": [
+    "Update existing card components",
+    "components/ui/DeleteModal.tsx",
+    "lib/utils/sharing.ts"
+  ]
+} 

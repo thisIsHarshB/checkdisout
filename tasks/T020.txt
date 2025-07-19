@@ -1,0 +1,24 @@
+{
+  "id": "T020", 
+  "title": "Projects Page Implementation",
+  "description": "Create page to display all user projects in single-column layout",
+  "phase": "phase5",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "30 minutes",
+  "dependencies": ["T019"],
+  "subtasks": [
+    "Create projects page with single-column layout",
+    "Implement responsive spacing",
+    "Add loading and empty states",
+    "Integrate with UserDataContext"
+  ],
+  "acceptanceCriteria": [
+    "Projects display in single-column layout",
+    "Page is responsive on all devices",
+    "Loading and empty states work correctly"
+  ],
+  "files": [
+    "app/(dashboard)/projects/page.tsx"
+  ]
+} 

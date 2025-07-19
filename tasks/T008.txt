@@ -1,0 +1,29 @@
+{
+  "id": "T008",
+  "title": "Base UI Components",
+  "description": "Create reusable UI components with consistent styling",
+  "phase": "phase3",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "45 minutes",
+  "dependencies": ["T001"],
+  "subtasks": [
+    "Create Button component with variants (primary, secondary, danger)",
+    "Create Input component with validation states", 
+    "Create Card component with dark theme styling",
+    "Create Modal component with backdrop",
+    "Create FileUpload component with drag & drop"
+  ],
+  "acceptanceCriteria": [
+    "All components styled with custom color palette",
+    "Components accept proper props and handle states",
+    "Components are reusable across the app"
+  ],
+  "files": [
+    "components/ui/Button.tsx",
+    "components/ui/Input.tsx", 
+    "components/ui/Card.tsx",
+    "components/ui/Modal.tsx",
+    "components/ui/FileUpload.tsx"
+  ]
+} 

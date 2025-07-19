@@ -1,0 +1,26 @@
+{
+  "id": "T019",
+  "title": "Project Card Component",
+  "description": "Create card component for displaying projects with banner images",
+  "phase": "phase5",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "40 minutes",
+  "dependencies": ["T015"],
+  "subtasks": [
+    "Create ProjectCard component with larger layout",
+    "Add project banner image display",
+    "Add project name and description",
+    "Add GitHub link with external link icon",
+    "Add team members section if applicable",
+    "Style for single-column layout"
+  ],
+  "acceptanceCriteria": [
+    "Card displays project information with banner image",
+    "Description text is readable and properly formatted",
+    "GitHub links open in new tab"
+  ],
+  "files": [
+    "components/cards/ProjectCard.tsx"
+  ]
+} 

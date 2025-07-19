@@ -1,0 +1,24 @@
+{
+  "id": "T022",
+  "title": "Participation Form Component",
+  "description": "Create form for adding participations (similar to achievements)",
+  "phase": "phase6",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "50 minutes",
+  "dependencies": ["T021"],
+  "subtasks": [
+    "Create ParticipationForm based on AchievementForm",
+    "Remove position field from form",
+    "Keep all other functionality identical",
+    "Ensure consistent styling and behavior"
+  ],
+  "acceptanceCriteria": [
+    "Form works identically to achievement form",
+    "Position field is not present",
+    "All validation and functionality works"
+  ],
+  "files": [
+    "components/forms/ParticipationForm.tsx"
+  ]
+} 

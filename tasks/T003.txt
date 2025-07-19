@@ -1,0 +1,25 @@
+{
+  "id": "T003",
+  "title": "TypeScript Types Definition",
+  "description": "Create comprehensive TypeScript interfaces for all data models",
+  "phase": "phase1", 
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "25 minutes",
+  "dependencies": ["T001"],
+  "subtasks": [
+    "Define User interface with all profile fields",
+    "Define Achievement interface with team member types",
+    "Define Participation interface",
+    "Define Project interface", 
+    "Create utility types for forms and components"
+  ],
+  "acceptanceCriteria": [
+    "All data models have TypeScript interfaces",
+    "Types are properly exported and importable",
+    "No TypeScript errors in type definitions"
+  ],
+  "files": [
+    "lib/types/index.ts"
+  ]
+} 

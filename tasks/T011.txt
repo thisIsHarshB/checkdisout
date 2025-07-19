@@ -1,0 +1,27 @@
+{
+  "id": "T011",
+  "title": "Firestore Database Helpers",
+  "description": "Create helper functions for Firestore database operations",
+  "phase": "phase4",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "50 minutes",
+  "dependencies": ["T002", "T003"],
+  "subtasks": [
+    "Create CRUD operations for users collection",
+    "Create CRUD operations for achievements collection",
+    "Create CRUD operations for participations collection",
+    "Create CRUD operations for projects collection",
+    "Add error handling and type safety",
+    "Add real-time listeners setup"
+  ],
+  "acceptanceCriteria": [
+    "All CRUD operations work with proper TypeScript types",
+    "Error handling implemented for network failures",
+    "Functions return consistent response formats"
+  ],
+  "files": [
+    "lib/firebase/firestore.ts",
+    "lib/hooks/useFirestore.ts"
+  ]
+} 

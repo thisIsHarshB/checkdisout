@@ -1,0 +1,26 @@
+{
+  "id": "T025",
+  "title": "Profile Form Component",
+  "description": "Create form for editing user profile information",
+  "phase": "phase6",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "60 minutes",
+  "dependencies": ["T008", "T012"],
+  "subtasks": [
+    "Create profile form with all user fields",
+    "Add profile picture upload functionality",
+    "Add qualities array management (add/remove)",
+    "Add skills array management", 
+    "Add social links validation",
+    "Add save/cancel functionality"
+  ],
+  "acceptanceCriteria": [
+    "Form pre-populates with current user data",
+    "All fields are editable and saveable",
+    "Profile picture upload works correctly"
+  ],
+  "files": [
+    "components/forms/ProfileForm.tsx"
+  ]
+} 

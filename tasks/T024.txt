@@ -1,0 +1,25 @@
+{
+  "id": "T024",
+  "title": "Add to Portfolio Page Implementation",
+  "description": "Create page with tabbed interface for adding different content types",
+  "phase": "phase6",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "45 minutes",
+  "dependencies": ["T021", "T022", "T023"],
+  "subtasks": [
+    "Create page with tab navigation",
+    "Integrate Achievement, Participation, and Project forms",
+    "Add tab switching functionality",
+    "Add success message and navigation options after submission",
+    "Style tab interface with custom colors"
+  ],
+  "acceptanceCriteria": [
+    "Tabs switch between different forms correctly",
+    "Forms submit and save data properly",
+    "Success flow guides user appropriately"
+  ],
+  "files": [
+    "app/(dashboard)/add-to-portfolio/page.tsx"
+  ]
+} 

@@ -1,0 +1,27 @@
+{
+  "id": "T026",
+  "title": "Profile Page Implementation",
+  "description": "Create user profile page with dropdowns and edit functionality",
+  "phase": "phase6",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "55 minutes", 
+  "dependencies": ["T025"],
+  "subtasks": [
+    "Create profile page layout with user info at top",
+    "Add dropdown sections in alternating colors",
+    "Implement edit mode toggle",
+    "Add read-only sections for achievements/participations/projects", 
+    "Add export button linking to export page",
+    "Style dropdowns with purple/blue alternating pattern"
+  ],
+  "acceptanceCriteria": [
+    "Page displays all user information correctly",
+    "Dropdowns expand/collapse properly",
+    "Edit mode allows inline editing",
+    "Export button navigates correctly"
+  ],
+  "files": [
+    "app/(dashboard)/profile/page.tsx"
+  ]
+} 

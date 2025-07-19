@@ -1,0 +1,27 @@
+{
+  "id": "T009",
+  "title": "Vertical Navbar Component",
+  "description": "Create the main navigation sidebar with CDO logo and menu items",
+  "phase": "phase3",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "40 minutes",
+  "dependencies": ["T008"],
+  "subtasks": [
+    "Create fixed vertical navbar with dark background",
+    "Add CDO logo at top with Space Grotesk font",
+    "Add navigation items with Lucide icons",
+    "Implement active state highlighting",
+    "Add responsive behavior (collapse on mobile)",
+    "Add logout functionality"
+  ],
+  "acceptanceCriteria": [
+    "Navbar is fixed and spans full height",
+    "All navigation items work correctly", 
+    "Active page is visually highlighted",
+    "Icons from Lucide React are properly displayed"
+  ],
+  "files": [
+    "components/layout/Navbar.tsx"
+  ]
+} 

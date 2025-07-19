@@ -1,0 +1,27 @@
+{
+      "id": "T029",
+      "title": "Export Portfolio Page Implementation", 
+      "description": "Create page for selecting sections and exporting portfolio PDF",
+      "phase": "phase7",
+      "priority": "critical",
+      "status": "pending",
+      "estimatedTime": "50 minutes",
+      "dependencies": ["T028"],
+      "subtasks": [
+        "Create export page with section selection interface",
+        "Add checkbox functionality with visual states",
+        "Implement confirm/export button state management",
+        "Add PDF generation and download functionality",
+        "Style with green/red selection indicators",
+        "Add loading states during PDF generation"
+      ],
+      "acceptanceCriteria": [
+        "Users can select/deselect sections to include",
+        "Visual feedback shows selected state",
+        "PDF downloads with selected sections only",
+        "Buttons enable/disable based on confirmation state"
+      ],
+      "files": [
+        "app/(dashboard)/export-portfolio/page.tsx"
+      ]
+    }, 

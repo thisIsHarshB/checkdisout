@@ -1,0 +1,26 @@
+{
+  "id": "T031",
+  "title": "Loading States and Skeletons",
+  "description": "Add comprehensive loading states throughout the application",
+  "phase": "phase8",
+  "priority": "high",
+  "status": "pending",
+  "estimatedTime": "45 minutes",
+  "dependencies": ["T016", "T018", "T020"],
+  "subtasks": [
+    "Create skeleton loader components for cards",
+    "Add loading states to all data fetching operations",
+    "Add button loading states",
+    "Add page-level loading indicators",
+    "Add loading states for file uploads"
+  ],
+  "acceptanceCriteria": [
+    "Loading states appear during data fetching",
+    "Skeleton loaders match actual content layout",
+    "Button loading states prevent double submissions"
+  ],
+  "files": [
+    "components/ui/SkeletonLoader.tsx",
+    "components/ui/LoadingSpinner.tsx"
+  ]
+} 

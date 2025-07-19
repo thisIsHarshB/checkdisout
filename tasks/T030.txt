@@ -1,0 +1,24 @@
+{
+  "id": "T030",
+  "title": "PDF Generation API Route",
+  "description": "Create API endpoint for server-side PDF generation if needed",
+  "phase": "phase7",
+  "priority": "medium",
+  "status": "pending", 
+  "estimatedTime": "40 minutes",
+  "dependencies": ["T028"],
+  "subtasks": [
+    "Create API route for PDF generation",
+    "Add error handling for PDF generation failures",
+    "Add file cleanup after generation",
+    "Optimize for performance"
+  ],
+  "acceptanceCriteria": [
+    "API generates PDF successfully",
+    "Proper error handling implemented",
+    "Good performance for PDF generation"
+  ],
+  "files": [
+    "app/api/generate-pdf/route.ts"
+  ]
+} 

@@ -1,0 +1,28 @@
+{
+  "id": "T006",
+  "title": "Login Page Implementation",
+  "description": "Create login page with email/password and Google OAuth",
+  "phase": "phase2",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "40 minutes",
+  "dependencies": ["T004"],
+  "subtasks": [
+    "Create login page with form validation",
+    "Add email/password authentication",
+    "Add Google OAuth button",
+    "Style with dark theme and custom colors",
+    "Add error handling and loading states",
+    "Add link to register page"
+  ],
+  "acceptanceCriteria": [
+    "Users can login with email/password",
+    "Google OAuth works correctly",
+    "Form validation shows appropriate errors",
+    "Successful login redirects to /home"
+  ],
+  "files": [
+    "app/(auth)/login/page.tsx",
+    "app/(auth)/layout.tsx"
+  ]
+} 

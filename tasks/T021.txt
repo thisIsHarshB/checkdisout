@@ -1,0 +1,27 @@
+{
+  "id": "T021",
+  "title": "Achievement Form Component",
+  "description": "Create comprehensive form for adding achievements",
+  "phase": "phase6",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "70 minutes",
+  "dependencies": ["T008", "T012"],
+  "subtasks": [
+    "Create form with all achievement fields",
+    "Add conditional fields (online/offline, solo/team)",
+    "Implement dynamic team member addition",
+    "Add file upload for certificates",
+    "Add form validation with error messages",
+    "Add loading states for submission"
+  ],
+  "acceptanceCriteria": [
+    "Form captures all required achievement data",
+    "Conditional fields appear based on selections",
+    "File upload works for certificates",
+    "Form validation prevents invalid submissions"
+  ],
+  "files": [
+    "components/forms/AchievementForm.tsx"
+  ]
+} 

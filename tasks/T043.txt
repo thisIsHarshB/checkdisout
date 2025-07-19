@@ -1,0 +1,27 @@
+{
+  "id": "T043",
+  "title": "Final Integration Testing",
+  "description": "Comprehensive testing of all features working together",
+  "phase": "phase8",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "60 minutes",
+  "dependencies": ["T041"],
+  "subtasks": [
+    "Test complete user journey from registration to PDF export",
+    "Test all CRUD operations work correctly",
+    "Test file uploads and downloads",
+    "Test responsive design on multiple devices",
+    "Test performance under load",
+    "Test error scenarios and recovery"
+  ],
+  "acceptanceCriteria": [
+    "All user scenarios work end-to-end",
+    "No critical bugs or errors",
+    "App performs well under normal usage"
+  ],
+  "files": [
+    "__tests__/integration/userJourney.test.tsx",
+    "__tests__/integration/crud.test.tsx"
+  ]
+} 

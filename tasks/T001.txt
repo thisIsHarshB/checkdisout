@@ -1,0 +1,28 @@
+{
+  "id": "T001",
+  "title": "Project Setup and Configuration",
+  "description": "Initialize NextJS 14 project with required dependencies and basic configuration",
+  "phase": "phase1",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "30 minutes",
+  "dependencies": [],
+  "subtasks": [
+    "Create NextJS 14 project with App Router",
+    "Install dependencies: firebase, lucide-react, @react-pdf/renderer, tailwindcss",
+    "Configure tailwind.config.js with custom colors and fonts",
+    "Setup globals.css with font imports",
+    "Create basic folder structure in app/ and components/"
+  ],
+  "acceptanceCriteria": [
+    "Project runs with npm run dev",
+    "TailwindCSS working with custom colors",
+    "All dependencies installed successfully"
+  ],
+  "files": [
+    "package.json",
+    "tailwind.config.js", 
+    "app/globals.css",
+    "next.config.js"
+  ]
+} 

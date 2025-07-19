@@ -1,0 +1,28 @@
+{
+  "id": "T028",
+  "title": "Portfolio PDF Component",
+  "description": "Create React-PDF component for generating portfolio PDFs",
+  "phase": "phase7",
+  "priority": "critical",
+  "status": "pending",
+  "estimatedTime": "80 minutes",
+  "dependencies": ["T013"],
+  "subtasks": [
+    "Create PortfolioPDF component using React-PDF",
+    "Design professional PDF layout",
+    "Add conditional rendering based on selected sections",
+    "Style PDF to match web app theme",
+    "Add clickable links in PDF",
+    "Add user profile section to PDF"
+  ],
+  "acceptanceCriteria": [
+    "PDF generates with professional layout",
+    "Selected sections appear correctly in PDF",
+    "Links in PDF are clickable",
+    "PDF matches web app styling"
+  ],
+  "files": [
+    "components/pdf/PortfolioPDF.tsx"
+  ]
+} 
+ 
