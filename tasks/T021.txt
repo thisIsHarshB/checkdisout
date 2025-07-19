@@ -11,14 +11,14 @@
     "Create form with all achievement fields",
     "Add conditional fields (online/offline, solo/team)",
     "Implement dynamic team member addition",
-    "Add file upload for certificates",
+    "Add file upload for certificates using Cloudinary",
     "Add form validation with error messages",
     "Add loading states for submission"
   ],
   "acceptanceCriteria": [
     "Form captures all required achievement data",
     "Conditional fields appear based on selections",
-    "File upload works for certificates",
+    "File upload works for certificates via Cloudinary",
     "Form validation prevents invalid submissions"
   ],
   "files": [

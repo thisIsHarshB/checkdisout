@@ -1,26 +1,29 @@
 {
   "id": "T012",
-  "title": "Firebase Storage Integration",
-  "description": "Setup file upload functionality for certificates and images",
+  "title": "Cloudinary Integration",
+  "description": "Setup file upload functionality for certificates and images using Cloudinary",
   "phase": "phase4",
   "priority": "high",
   "status": "pending", 
   "estimatedTime": "35 minutes",
   "dependencies": ["T002"],
   "subtasks": [
-    "Create file upload functions for certificates",
+    "Create Cloudinary configuration and upload functions",
     "Create image upload functions for profile pictures and project banners",
+    "Create document upload functions for certificates",
     "Add file validation (type, size)",
     "Add progress tracking for uploads",
     "Create file deletion functions"
   ],
   "acceptanceCriteria": [
-    "Files upload successfully to Firebase Storage",
+    "Files upload successfully to Cloudinary",
     "File validation prevents invalid uploads",
     "Upload progress is tracked and displayed"
   ],
   "files": [
-    "lib/firebase/storage.ts",
-    "lib/hooks/useStorage.ts"
+    "lib/cloudinary/config.ts",
+    "lib/cloudinary/upload.ts",
+    "lib/hooks/useCloudinary.ts",
+    "app/api/cloudinary/delete/route.ts"
   ]
 } 

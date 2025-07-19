@@ -1,15 +1,14 @@
 {
   "id": "T036",
   "title": "Firebase Security Rules Implementation",
-  "description": "Configure Firestore and Storage security rules for data protection",
+  "description": "Configure Firestore security rules for data protection",
   "phase": "phase8",
   "priority": "critical",
   "status": "pending",
   "estimatedTime": "30 minutes",
-  "dependencies": ["T011", "T012"],
+  "dependencies": ["T011"],
   "subtasks": [
     "Configure Firestore security rules as per PRD specifications",
-    "Configure Firebase Storage security rules",
     "Test security rules with different user scenarios",
     "Ensure users can only access their own data",
     "Add rules for read/write permissions"
@@ -20,7 +19,6 @@
     "Rules are properly tested and working"
   ],
   "files": [
-    "firestore.rules",
-    "storage.rules"
+    "firestore.rules"
   ]
 } 

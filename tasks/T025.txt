@@ -9,7 +9,7 @@
   "dependencies": ["T008", "T012"],
   "subtasks": [
     "Create profile form with all user fields",
-    "Add profile picture upload functionality",
+    "Add profile picture upload functionality using Cloudinary",
     "Add qualities array management (add/remove)",
     "Add skills array management", 
     "Add social links validation",
@@ -18,7 +18,7 @@
   "acceptanceCriteria": [
     "Form pre-populates with current user data",
     "All fields are editable and saveable",
-    "Profile picture upload works correctly"
+    "Profile picture upload works correctly via Cloudinary"
   ],
   "files": [
     "components/forms/ProfileForm.tsx"

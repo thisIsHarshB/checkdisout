@@ -1,7 +1,7 @@
 {
   "id": "T023",
   "title": "Project Form Component",
-  "description": "Create form for adding projects with image upload",
+  "description": "Create form for adding projects with image upload using Cloudinary",
   "phase": "phase6",
   "priority": "high", 
   "status": "pending",
@@ -9,7 +9,7 @@
   "dependencies": ["T021"],
   "subtasks": [
     "Create project form with required fields",
-    "Add banner image upload functionality",
+    "Add banner image upload functionality using Cloudinary",
     "Add project description with character limit",
     "Add GitHub link validation", 
     "Add team member functionality",
@@ -17,7 +17,7 @@
   ],
   "acceptanceCriteria": [
     "Form captures all project information",
-    "Image upload works for project banners",
+    "Image upload works for project banners via Cloudinary",
     "GitHub URL validation works correctly"
   ],
   "files": [

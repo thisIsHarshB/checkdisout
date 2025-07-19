@@ -8,7 +8,7 @@
   "estimatedTime": "35 minutes",
   "dependencies": ["T002"],
   "subtasks": [
-    "Create comprehensive .env.example file",
+    "Create comprehensive env.example file",
     "Setup Vercel deployment configuration",
     "Configure environment variables for production",
     "Test Firebase connection in production environment",
@@ -20,7 +20,7 @@
     "Production environment works correctly"
   ],
   "files": [
-    ".env.example",
+    "env.example",
     "vercel.json",
     "next.config.js"
   ]

@@ -11,7 +11,7 @@
     "Create lib/firebase/config.ts with Firebase initialization",
     "Setup environment variables in .env.local",
     "Create Firebase project and get configuration keys",
-    "Configure Firestore and Storage in Firebase console"
+    "Configure Firestore in Firebase console"
   ],
   "acceptanceCriteria": [
     "Firebase connection established",
@@ -21,6 +21,6 @@
   "files": [
     "lib/firebase/config.ts",
     ".env.local",
-    ".env.example"
+    "env.example"
   ]
 } 
