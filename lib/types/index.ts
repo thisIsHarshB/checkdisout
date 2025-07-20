@@ -5,19 +5,18 @@
 export interface User {
   id: string;
   email: string;
-  displayName: string;
-  age?: number;
+  name: string;
+  phone?: string;
   location?: string;
   bio?: string;
-  profilePicture?: string; // Cloudinary URL
+  profilePictureUrl?: string; // Cloudinary URL
+  website?: string;
+  github?: string;
+  linkedin?: string;
+  twitter?: string;
+  instagram?: string;
   qualities: string[]; // e.g., ["Creative", "Problem Solver", "Team Player"]
   skills: string[]; // e.g., ["React", "TypeScript", "Node.js"]
-  socialLinks: {
-    linkedin?: string;
-    github?: string;
-    twitter?: string;
-    portfolio?: string;
-  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -124,19 +123,18 @@ export interface ProjectFormData {
 }
 
 export interface ProfileFormData {
-  displayName: string;
-  age?: number;
+  name: string;
+  phone?: string;
   location?: string;
   bio?: string;
   profilePicture?: File;
+  website?: string;
+  github?: string;
+  linkedin?: string;
+  twitter?: string;
+  instagram?: string;
   qualities: string[];
   skills: string[];
-  socialLinks: {
-    linkedin?: string;
-    github?: string;
-    twitter?: string;
-    portfolio?: string;
-  };
 }
 
 // ============================================================================

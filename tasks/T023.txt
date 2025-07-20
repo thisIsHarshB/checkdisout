@@ -4,7 +4,7 @@
   "description": "Create form for adding projects with image upload using Cloudinary",
   "phase": "phase6",
   "priority": "high", 
-  "status": "pending",
+  "status": "completed",
   "estimatedTime": "55 minutes",
   "dependencies": ["T021"],
   "subtasks": [

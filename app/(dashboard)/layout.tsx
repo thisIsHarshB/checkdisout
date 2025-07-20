@@ -4,6 +4,7 @@ import React from 'react';
 import { useAuth } from '@/lib/hooks/useAuth';
 import AuthGuard from '@/components/layout/AuthGuard';
 import Navbar from '@/components/layout/Navbar';
+import { UserDataProvider } from '@/lib/context/UserDataContext';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -25,14 +26,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gray-900">
-        <Navbar />
-        <main className="lg:ml-64 transition-all duration-300">
-          <div className="p-4 sm:p-6 lg:p-8">
+      <UserDataProvider>
+        <div className="min-h-screen bg-background">
+          <Navbar />
+          <main className="lg:ml-64 transition-all duration-300">
             {children}
-          </div>
-        </main>
-      </div>
+          </main>
+        </div>
+      </UserDataProvider>
     </AuthGuard>
   );
 } 

@@ -4,7 +4,7 @@
   "description": "Create card component for displaying projects with banner images",
   "phase": "phase5",
   "priority": "high",
-  "status": "pending",
+  "status": "completed",
   "estimatedTime": "40 minutes",
   "dependencies": ["T015"],
   "subtasks": [

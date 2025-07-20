@@ -4,7 +4,7 @@
   "description": "Create page to display all user participations",
   "phase": "phase5",
   "priority": "critical",
-  "status": "pending",
+  "status": "completed",
   "estimatedTime": "30 minutes",
   "dependencies": ["T017"],
   "subtasks": [

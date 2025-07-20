@@ -11,31 +11,28 @@ import {
   Users,
   FolderOpen,
   User,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  Award,
-  Calendar,
-  BarChart3
+  Upload,
+  Plus,
+  GraduationCap,
+  RefreshCw,
+  Grid3X3
 } from 'lucide-react';
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  badge?: number;
+  category: 'main' | 'secondary';
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: Home },
-  { label: 'Achievements', href: '/achievements', icon: Trophy },
-  { label: 'Participations', href: '/participations', icon: Award },
-  { label: 'Projects', href: '/projects', icon: FolderOpen },
-  { label: 'Team', href: '/team', icon: Users },
-  { label: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { label: 'Profile', href: '/profile', icon: User },
-  { label: 'Settings', href: '/settings', icon: Settings },
+  { label: 'Home', href: '/dashboard', icon: Home, category: 'main' },
+  { label: 'Achievements', href: '/achievements', icon: GraduationCap, category: 'main' },
+  { label: 'Participations', href: '/participations', icon: RefreshCw, category: 'main' },
+  { label: 'Projects', href: '/projects', icon: Grid3X3, category: 'main' },
+  { label: 'Export Portfolio', href: '/export', icon: Upload, category: 'main' },
+  { label: 'Add To Portfolio', href: '/add-to-portfolio', icon: Plus, category: 'secondary' },
+  { label: 'Profile', href: '/profile', icon: User, category: 'secondary' },
 ];
 
 export default function Navbar() {
@@ -71,45 +68,23 @@ export default function Navbar() {
     return pathname.startsWith(href);
   };
 
+  const mainNavItems = navItems.filter(item => item.category === 'main');
+  const secondaryNavItems = navItems.filter(item => item.category === 'secondary');
+
   const NavbarContent = ({ isMobile = false }: { isMobile?: boolean }) => (
-    <div className={cn(
-      "flex flex-col h-full",
-      isMobile ? "w-full" : "w-full"
-    )}>
-      {/* Logo Section */}
-      <div className={cn(
-        "flex items-center px-4 py-6 border-b border-gray-700",
-        isCollapsed && !isMobile ? "justify-center" : "justify-between"
-      )}>
-        <Link href="/dashboard" className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">CDO</span>
-          </div>
-          {(!isCollapsed || isMobile) && (
-            <span className="text-xl font-bold text-white font-['Space_Grotesk']">
-              CheckDisOut
-            </span>
-          )}
-        </Link>
-        
-        {!isMobile && (
-          <button
-            onClick={toggleCollapse}
-            className="p-1 rounded-lg hover:bg-gray-700 transition-colors"
-            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {isCollapsed ? (
-              <Menu className="h-4 w-4 text-gray-400" />
-            ) : (
-              <X className="h-4 w-4 text-gray-400" />
-            )}
-          </button>
-        )}
+    <div className="flex flex-col h-full bg-gray-900 border-r border-gray-800">
+      {/* CDO Header */}
+      <div className="px-4 py-6 border-b border-gray-800">
+        <div className="text-center">
+          <h1 className="text-xl font-heading font-bold text-gray-100">
+            CDO
+          </h1>
+        </div>
       </div>
 
-      {/* Navigation Items */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
-        {navItems.map((item) => {
+      {/* Main Navigation Items */}
+      <nav className="flex-1 px-4 py-4 space-y-2">
+        {mainNavItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.href);
           
@@ -119,25 +94,45 @@ export default function Navbar() {
               href={item.href}
               onClick={isMobile ? closeMobile : undefined}
               className={cn(
-                "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors duration-200",
-                "hover:bg-gray-700 hover:text-white",
-                active 
-                  ? "bg-blue-600 text-white shadow-lg" 
-                  : "text-gray-300",
+                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
+                "text-gray-300 hover:text-white hover:bg-gray-800",
+                active && "text-white bg-gray-800",
                 isCollapsed && !isMobile && "justify-center"
               )}
             >
-              <Icon className={cn(
-                "h-5 w-5",
-                isCollapsed && !isMobile && "h-6 w-6"
-              )} />
+              <Icon className="h-5 w-5" />
               {(!isCollapsed || isMobile) && (
-                <span className="font-medium">{item.label}</span>
+                <span className="font-sans text-sm">{item.label}</span>
               )}
-              {item.badge && (!isCollapsed || isMobile) && (
-                <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {item.badge}
-                </span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* Secondary Navigation Items */}
+      <nav className="px-4 py-4 space-y-2">
+        {secondaryNavItems.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.href);
+          
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={isMobile ? closeMobile : undefined}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
+                "text-gray-300 hover:text-white hover:bg-gray-800",
+                active && "text-white bg-gray-800",
+                isCollapsed && !isMobile && "justify-center"
+              )}
+            >
+              <Icon className="h-5 w-5" />
+              {(!isCollapsed || isMobile) && (
+                <span className="font-sans text-sm">{item.label}</span>
               )}
             </Link>
           );
@@ -145,21 +140,20 @@ export default function Navbar() {
       </nav>
 
       {/* Logout Section */}
-      <div className="px-4 py-4 border-t border-gray-700">
+      <div className="px-4 py-4 border-t border-gray-800">
         <button
           onClick={handleLogout}
           className={cn(
-            "flex items-center space-x-3 w-full px-3 py-2 rounded-lg transition-colors duration-200",
-            "text-gray-300 hover:bg-red-600 hover:text-white",
+            "flex items-center gap-3 w-full px-3 py-2 rounded-lg transition-all duration-200",
+            "text-gray-300 hover:text-white hover:bg-red-600",
             isCollapsed && !isMobile && "justify-center"
           )}
         >
-          <LogOut className={cn(
-            "h-5 w-5",
-            isCollapsed && !isMobile && "h-6 w-6"
-          )} />
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
           {(!isCollapsed || isMobile) && (
-            <span className="font-medium">Logout</span>
+            <span className="font-sans text-sm">Logout</span>
           )}
         </button>
       </div>
@@ -170,7 +164,7 @@ export default function Navbar() {
     <>
       {/* Desktop Navbar */}
       <div className={cn(
-        "fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-700 z-40 transition-all duration-300",
+        "fixed left-0 top-0 h-full z-40 transition-all duration-300",
         isCollapsed ? "w-16" : "w-64"
       )}>
         <NavbarContent />
@@ -186,7 +180,7 @@ export default function Navbar() {
 
       {/* Mobile Navbar */}
       <div className={cn(
-        "fixed left-0 top-0 h-full bg-gray-900 border-r border-gray-700 z-50 transition-transform duration-300 lg:hidden",
+        "fixed left-0 top-0 h-full z-50 transition-transform duration-300 lg:hidden",
         isMobileOpen ? "translate-x-0" : "-translate-x-full",
         "w-64"
       )}>
@@ -199,7 +193,9 @@ export default function Navbar() {
         className="fixed top-4 left-4 z-50 p-2 bg-gray-800 rounded-lg border border-gray-700 lg:hidden"
         aria-label="Toggle navigation"
       >
-        <Menu className="h-5 w-5 text-white" />
+        <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
       </button>
 
       {/* Main Content Spacer */}

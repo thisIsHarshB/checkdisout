@@ -4,7 +4,7 @@
   "description": "Create card component for displaying participations (similar to achievements)",
   "phase": "phase5",
   "priority": "high",
-  "status": "pending",
+  "status": "completed",
   "estimatedTime": "35 minutes",
   "dependencies": ["T015"],
   "subtasks": [

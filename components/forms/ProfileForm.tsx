@@ -1,0 +1,570 @@
+'use client';
+
+import React, { useState } from 'react';
+import { User } from '@/lib/types';
+import Button from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Card } from '@/components/ui/Card';
+import { useCloudinary } from '@/lib/hooks/useCloudinary';
+import { 
+  User as UserIcon, 
+  Plus, 
+  X, 
+  Upload, 
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  Github,
+  Linkedin,
+  Twitter,
+  Instagram,
+  Award,
+  Code,
+  Camera
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
+
+interface ProfileFormProps {
+  initialData: User;
+  onSubmit: (data: Partial<User>) => Promise<void>;
+  onCancel: () => void;
+  isLoading?: boolean;
+}
+
+export const ProfileForm: React.FC<ProfileFormProps> = ({
+  initialData,
+  onSubmit,
+  onCancel,
+  isLoading = false
+}) => {
+  const { uploadFile, uploadProgress, isUploading } = useCloudinary();
+  
+  const [formData, setFormData] = useState({
+    name: initialData.name || '',
+    email: initialData.email || '',
+    phone: initialData.phone || '',
+    location: initialData.location || '',
+    bio: initialData.bio || '',
+    profilePictureUrl: initialData.profilePictureUrl || '',
+    website: initialData.website || '',
+    github: initialData.github || '',
+    linkedin: initialData.linkedin || '',
+    twitter: initialData.twitter || '',
+    instagram: initialData.instagram || '',
+    qualities: initialData.qualities || [],
+    skills: initialData.skills || []
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [newQuality, setNewQuality] = useState('');
+  const [newSkill, setNewSkill] = useState('');
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!isValidEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (formData.phone && !isValidPhone(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
+    }
+
+    if (formData.website && !isValidUrl(formData.website)) {
+      newErrors.website = 'Please enter a valid website URL';
+    }
+
+    if (formData.github && !isValidGitHubUrl(formData.github)) {
+      newErrors.github = 'Please enter a valid GitHub URL';
+    }
+
+    if (formData.linkedin && !isValidLinkedInUrl(formData.linkedin)) {
+      newErrors.linkedin = 'Please enter a valid LinkedIn URL';
+    }
+
+    if (formData.twitter && !isValidTwitterUrl(formData.twitter)) {
+      newErrors.twitter = 'Please enter a valid Twitter URL';
+    }
+
+    if (formData.instagram && !isValidInstagramUrl(formData.instagram)) {
+      newErrors.instagram = 'Please enter a valid Instagram URL';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isValidPhone = (phone: string) => {
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+  };
+
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const isValidGitHubUrl = (url: string) => {
+    const githubRegex = /^https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9-]+$/;
+    return githubRegex.test(url);
+  };
+
+  const isValidLinkedInUrl = (url: string) => {
+    const linkedinRegex = /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+$/;
+    return linkedinRegex.test(url);
+  };
+
+  const isValidTwitterUrl = (url: string) => {
+    const twitterRegex = /^https?:\/\/(www\.)?twitter\.com\/[a-zA-Z0-9_]+$/;
+    return twitterRegex.test(url);
+  };
+
+  const isValidInstagramUrl = (url: string) => {
+    const instagramRegex = /^https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9_.]+$/;
+    return instagramRegex.test(url);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      await onSubmit(formData);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
+  };
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      const url = await uploadFile(file, 'profile-pictures');
+      setFormData(prev => ({ ...prev, profilePictureUrl: url }));
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
+  const addQuality = () => {
+    if (newQuality.trim() && !formData.qualities.includes(newQuality.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        qualities: [...prev.qualities, newQuality.trim()]
+      }));
+      setNewQuality('');
+    }
+  };
+
+  const removeQuality = (qualityToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      qualities: prev.qualities.filter(quality => quality !== qualityToRemove)
+    }));
+  };
+
+  const addSkill = () => {
+    if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        skills: [...prev.skills, newSkill.trim()]
+      }));
+      setNewSkill('');
+    }
+  };
+
+  const removeSkill = (skillToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      skills: prev.skills.filter(skill => skill !== skillToRemove)
+    }));
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <Card className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+            <UserIcon className="h-5 w-5 text-primary" />
+          </div>
+          <h2 className="text-2xl font-heading font-bold text-foreground">
+            Edit Profile
+          </h2>
+        </div>
+
+        {/* Profile Picture */}
+        <div className="space-y-4 mb-6">
+          <div className="flex items-center gap-2">
+            <Camera className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">Profile Picture</span>
+          </div>
+          
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              {formData.profilePictureUrl ? (
+                <div className="w-20 h-20 rounded-full overflow-hidden bg-muted">
+                  <Image
+                    src={formData.profilePictureUrl}
+                    alt="Profile"
+                    width={80}
+                    height={80}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center">
+                  <UserIcon className="h-8 w-8 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+            
+            <div className="flex-1">
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleImageUpload(file);
+                  }
+                }}
+                className="hidden"
+                id="profile-picture-upload"
+                disabled={isUploading}
+              />
+              <label
+                htmlFor="profile-picture-upload"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {isUploading ? 'Uploading...' : 'Choose Image'}
+              </label>
+              
+              {isUploading && uploadProgress > 0 && (
+                <div className="mt-2">
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div
+                      className="bg-primary h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{uploadProgress}%</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Basic Information */}
+        <div className="space-y-4 mb-6">
+          <h3 className="text-lg font-semibold text-foreground">Basic Information</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Full Name *
+              </label>
+              <Input
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Your full name"
+                className={cn(errors.name && "border-destructive")}
+              />
+              {errors.name && (
+                <p className="text-sm text-destructive mt-1">{errors.name}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Email *
+              </label>
+              <Input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="your.email@example.com"
+                className={cn(errors.email && "border-destructive")}
+              />
+              {errors.email && (
+                <p className="text-sm text-destructive mt-1">{errors.email}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Phone Number
+              </label>
+              <Input
+                value={formData.phone}
+                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="+1 (555) 123-4567"
+                className={cn(errors.phone && "border-destructive")}
+              />
+              {errors.phone && (
+                <p className="text-sm text-destructive mt-1">{errors.phone}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Location
+              </label>
+              <Input
+                value={formData.location}
+                onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                placeholder="City, Country"
+                className={cn(errors.location && "border-destructive")}
+              />
+              {errors.location && (
+                <p className="text-sm text-destructive mt-1">{errors.location}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Bio
+            </label>
+            <textarea
+              value={formData.bio}
+              onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+              placeholder="Tell us about yourself, your background, and what you're passionate about..."
+              rows={4}
+              className="w-full px-3 py-2 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+            />
+          </div>
+        </div>
+
+        {/* Social Links */}
+        <div className="space-y-4 mb-6">
+          <h3 className="text-lg font-semibold text-foreground">Social Links</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Website
+              </label>
+              <div className="relative">
+                <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={formData.website}
+                  onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                  placeholder="https://yourwebsite.com"
+                  className={cn("pl-10", errors.website && "border-destructive")}
+                />
+              </div>
+              {errors.website && (
+                <p className="text-sm text-destructive mt-1">{errors.website}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                GitHub
+              </label>
+              <div className="relative">
+                <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={formData.github}
+                  onChange={(e) => setFormData(prev => ({ ...prev, github: e.target.value }))}
+                  placeholder="https://github.com/username"
+                  className={cn("pl-10", errors.github && "border-destructive")}
+                />
+              </div>
+              {errors.github && (
+                <p className="text-sm text-destructive mt-1">{errors.github}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                LinkedIn
+              </label>
+              <div className="relative">
+                <Linkedin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={formData.linkedin}
+                  onChange={(e) => setFormData(prev => ({ ...prev, linkedin: e.target.value }))}
+                  placeholder="https://linkedin.com/in/username"
+                  className={cn("pl-10", errors.linkedin && "border-destructive")}
+                />
+              </div>
+              {errors.linkedin && (
+                <p className="text-sm text-destructive mt-1">{errors.linkedin}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Twitter
+              </label>
+              <div className="relative">
+                <Twitter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={formData.twitter}
+                  onChange={(e) => setFormData(prev => ({ ...prev, twitter: e.target.value }))}
+                  placeholder="https://twitter.com/username"
+                  className={cn("pl-10", errors.twitter && "border-destructive")}
+                />
+              </div>
+              {errors.twitter && (
+                <p className="text-sm text-destructive mt-1">{errors.twitter}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Instagram
+              </label>
+              <div className="relative">
+                <Instagram className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={formData.instagram}
+                  onChange={(e) => setFormData(prev => ({ ...prev, instagram: e.target.value }))}
+                  placeholder="https://instagram.com/username"
+                  className={cn("pl-10", errors.instagram && "border-destructive")}
+                />
+              </div>
+              {errors.instagram && (
+                <p className="text-sm text-destructive mt-1">{errors.instagram}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Qualities */}
+        <div className="space-y-4 mb-6">
+          <div className="flex items-center gap-2">
+            <Award className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">Personal Qualities</span>
+          </div>
+          
+          <div className="space-y-3">
+            {formData.qualities.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.qualities.map((quality, index) => (
+                  <span
+                    key={index}
+                    className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-sm"
+                  >
+                    {quality}
+                    <button
+                      type="button"
+                      onClick={() => removeQuality(quality)}
+                      className="hover:text-primary/80"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            
+            <div className="flex gap-2">
+              <Input
+                value={newQuality}
+                onChange={(e) => setNewQuality(e.target.value)}
+                placeholder="Add a quality (e.g., Creative, Analytical)"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addQuality())}
+              />
+              <Button
+                type="button"
+                onClick={addQuality}
+                disabled={!newQuality.trim()}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Skills */}
+        <div className="space-y-4 mb-6">
+          <div className="flex items-center gap-2">
+            <Code className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">Technical Skills</span>
+          </div>
+          
+          <div className="space-y-3">
+            {formData.skills.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.skills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="flex items-center gap-1 px-3 py-1 bg-secondary/10 text-secondary border border-secondary/20 rounded-full text-sm"
+                  >
+                    {skill}
+                    <button
+                      type="button"
+                      onClick={() => removeSkill(skill)}
+                      className="hover:text-secondary/80"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            
+            <div className="flex gap-2">
+              <Input
+                value={newSkill}
+                onChange={(e) => setNewSkill(e.target.value)}
+                placeholder="Add a skill (e.g., React, Python)"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+              />
+              <Button
+                type="button"
+                onClick={addSkill}
+                disabled={!newSkill.trim()}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Form Actions */}
+        <div className="flex items-center justify-end gap-4 pt-6 border-t border-border">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isLoading || isUploading}
+            className="gap-2"
+          >
+            {isLoading ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
+      </Card>
+    </form>
+  );
+}; 

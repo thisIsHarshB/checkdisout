@@ -4,7 +4,7 @@
   "description": "Implement edit, delete, and share functionality for all cards",
   "phase": "phase6",
   "priority": "critical",
-  "status": "pending",
+  "status": "completed",
   "estimatedTime": "70 minutes",
   "dependencies": ["T015", "T017", "T019"],
   "subtasks": [

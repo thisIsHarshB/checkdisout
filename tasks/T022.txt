@@ -4,7 +4,7 @@
   "description": "Create form for adding participations (similar to achievements)",
   "phase": "phase6",
   "priority": "high",
-  "status": "pending",
+  "status": "completed",
   "estimatedTime": "50 minutes",
   "dependencies": ["T021"],
   "subtasks": [
