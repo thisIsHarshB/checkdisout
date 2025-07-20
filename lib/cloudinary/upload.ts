@@ -92,6 +92,35 @@ export const validateCertificate = (file: File): FileValidation => {
   return { isValid: true };
 };
 
+async function compressImage(file: File, quality = 0.8): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target?.result as string;
+    };
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Failed to get canvas context'));
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return reject(new Error('Compression failed'));
+          resolve(new File([blob], file.name, { type: file.type }));
+        },
+        file.type,
+        quality
+      );
+    };
+    img.onerror = reject;
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export const uploadImage = async (
   file: File, 
   folder: string = 'checkdisout',
@@ -103,8 +132,14 @@ export const uploadImage = async (
     throw new Error(validation.error);
   }
 
+  // Compress image before upload
+  let uploadFile = file;
+  if (file.type === 'image/jpeg' || file.type === 'image/png') {
+    uploadFile = await compressImage(file, 0.8);
+  }
+
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('file', uploadFile);
   formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
   formData.append('folder', folder);
 
@@ -224,11 +259,15 @@ export const uploadCertificate = async (
 
   // Determine if it's an image or document
   const isImage = file.type.startsWith('image/');
+  let uploadFile = file;
+  if (isImage && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+    uploadFile = await compressImage(file, 0.8);
+  }
   const resourceType = isImage ? 'image' : 'raw';
   const endpoint = isImage ? 'image/upload' : 'raw/upload';
 
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('file', uploadFile);
   formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
   formData.append('folder', folder);
   if (!isImage) {

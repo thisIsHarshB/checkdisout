@@ -39,7 +39,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
   onCancel,
   isLoading = false
 }) => {
-  const { uploadFile, uploadProgress, isUploading } = useCloudinary();
+  const { uploadProfileImage, uploadProgress, isUploading } = useCloudinary();
   
   const [formData, setFormData] = useState({
     name: initialData.name || '',
@@ -47,7 +47,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
     phone: initialData.phone || '',
     location: initialData.location || '',
     bio: initialData.bio || '',
-    profilePictureUrl: initialData.profilePictureUrl || '',
+    profilePictureURL: initialData.profilePictureURL || '',
     website: initialData.website || '',
     github: initialData.github || '',
     linkedin: initialData.linkedin || '',
@@ -157,8 +157,8 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
 
   const handleImageUpload = async (file: File) => {
     try {
-      const url = await uploadFile(file, 'profile-pictures');
-      setFormData(prev => ({ ...prev, profilePictureUrl: url }));
+      const result = await uploadProfileImage(file);
+      setFormData(prev => ({ ...prev, profilePictureURL: result.url }));
     } catch (error) {
       console.error('Error uploading image:', error);
     }
@@ -200,12 +200,12 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card className="p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+      <Card className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-center gap-3 mb-4 sm:mb-6">
+          <div className="w-20 h-20 bg-accent/10 rounded-full flex items-center justify-center">
             <UserIcon className="h-5 w-5 text-primary" />
           </div>
-          <h2 className="text-2xl font-heading font-bold text-foreground">
+          <h2 className="text-lg sm:text-2xl font-heading font-bold text-foreground">
             Edit Profile
           </h2>
         </div>
@@ -219,10 +219,10 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
           
           <div className="flex items-center gap-6">
             <div className="relative">
-              {formData.profilePictureUrl ? (
+              {formData.profilePictureURL ? (
                 <div className="w-20 h-20 rounded-full overflow-hidden bg-muted">
                   <Image
-                    src={formData.profilePictureUrl}
+                    src={formData.profilePictureURL}
                     alt="Profile"
                     width={80}
                     height={80}
@@ -257,15 +257,15 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                 {isUploading ? 'Uploading...' : 'Choose Image'}
               </label>
               
-              {isUploading && uploadProgress > 0 && (
+              {isUploading && uploadProgress.percentage > 0 && (
                 <div className="mt-2">
                   <div className="w-full bg-muted rounded-full h-2">
                     <div
                       className="bg-primary h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
+                      style={{ width: `${uploadProgress.percentage}%` }}
                     ></div>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">{uploadProgress}%</p>
+                  <p className="text-xs text-muted-foreground mt-1">{uploadProgress.percentage}%</p>
                 </div>
               )}
             </div>
@@ -278,69 +278,69 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 Full Name *
               </label>
               <Input
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Your full name"
-                className={cn(errors.name && "border-destructive")}
+                placeholder="Your Name"
+                className={cn(errors.name && "border-destructive", "w-full min-h-[44px]")}
               />
               {errors.name && (
-                <p className="text-sm text-destructive mt-1">{errors.name}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.name}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 Email *
               </label>
               <Input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="your.email@example.com"
-                className={cn(errors.email && "border-destructive")}
+                placeholder="you@example.com"
+                className={cn(errors.email && "border-destructive", "w-full min-h-[44px]")}
               />
               {errors.email && (
-                <p className="text-sm text-destructive mt-1">{errors.email}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.email}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 Phone Number
               </label>
               <Input
                 value={formData.phone}
                 onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                 placeholder="+1 (555) 123-4567"
-                className={cn(errors.phone && "border-destructive")}
+                className={cn(errors.phone && "border-destructive", "w-full min-h-[44px]")}
               />
               {errors.phone && (
-                <p className="text-sm text-destructive mt-1">{errors.phone}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.phone}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 Location
               </label>
               <Input
                 value={formData.location}
                 onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                 placeholder="City, Country"
-                className={cn(errors.location && "border-destructive")}
+                className={cn(errors.location && "border-destructive", "w-full min-h-[44px]")}
               />
               {errors.location && (
-                <p className="text-sm text-destructive mt-1">{errors.location}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.location}</p>
               )}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
               Bio
             </label>
             <textarea
@@ -359,7 +359,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 Website
               </label>
               <div className="relative">
@@ -368,16 +368,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                   value={formData.website}
                   onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
                   placeholder="https://yourwebsite.com"
-                  className={cn("pl-10", errors.website && "border-destructive")}
+                  className={cn("pl-10", errors.website && "border-destructive", "w-full min-h-[44px]")}
                 />
               </div>
               {errors.website && (
-                <p className="text-sm text-destructive mt-1">{errors.website}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.website}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 GitHub
               </label>
               <div className="relative">
@@ -386,16 +386,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                   value={formData.github}
                   onChange={(e) => setFormData(prev => ({ ...prev, github: e.target.value }))}
                   placeholder="https://github.com/username"
-                  className={cn("pl-10", errors.github && "border-destructive")}
+                  className={cn("pl-10", errors.github && "border-destructive", "w-full min-h-[44px]")}
                 />
               </div>
               {errors.github && (
-                <p className="text-sm text-destructive mt-1">{errors.github}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.github}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 LinkedIn
               </label>
               <div className="relative">
@@ -404,16 +404,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                   value={formData.linkedin}
                   onChange={(e) => setFormData(prev => ({ ...prev, linkedin: e.target.value }))}
                   placeholder="https://linkedin.com/in/username"
-                  className={cn("pl-10", errors.linkedin && "border-destructive")}
+                  className={cn("pl-10", errors.linkedin && "border-destructive", "w-full min-h-[44px]")}
                 />
               </div>
               {errors.linkedin && (
-                <p className="text-sm text-destructive mt-1">{errors.linkedin}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.linkedin}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 Twitter
               </label>
               <div className="relative">
@@ -422,16 +422,16 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                   value={formData.twitter}
                   onChange={(e) => setFormData(prev => ({ ...prev, twitter: e.target.value }))}
                   placeholder="https://twitter.com/username"
-                  className={cn("pl-10", errors.twitter && "border-destructive")}
+                  className={cn("pl-10", errors.twitter && "border-destructive", "w-full min-h-[44px]")}
                 />
               </div>
               {errors.twitter && (
-                <p className="text-sm text-destructive mt-1">{errors.twitter}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.twitter}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
                 Instagram
               </label>
               <div className="relative">
@@ -440,11 +440,11 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                   value={formData.instagram}
                   onChange={(e) => setFormData(prev => ({ ...prev, instagram: e.target.value }))}
                   placeholder="https://instagram.com/username"
-                  className={cn("pl-10", errors.instagram && "border-destructive")}
+                  className={cn("pl-10", errors.instagram && "border-destructive", "w-full min-h-[44px]")}
                 />
               </div>
               {errors.instagram && (
-                <p className="text-sm text-destructive mt-1">{errors.instagram}</p>
+                <p className="text-xs sm:text-sm text-destructive mt-1">{errors.instagram}</p>
               )}
             </div>
           </div>
@@ -484,6 +484,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                 onChange={(e) => setNewQuality(e.target.value)}
                 placeholder="Add a quality (e.g., Creative, Analytical)"
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addQuality())}
+                className="w-full min-h-[44px]"
               />
               <Button
                 type="button"
@@ -532,6 +533,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
                 onChange={(e) => setNewSkill(e.target.value)}
                 placeholder="Add a skill (e.g., React, Python)"
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
+                className="w-full min-h-[44px]"
               />
               <Button
                 type="button"
@@ -547,19 +549,20 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
         </div>
 
         {/* Form Actions */}
-        <div className="flex items-center justify-end gap-4 pt-6 border-t border-border">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-4">
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
             disabled={isLoading}
+            className="w-full sm:w-auto min-h-[44px]"
           >
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={isLoading || isUploading}
-            className="gap-2"
+            className="w-full sm:w-auto min-h-[44px] gap-2"
           >
             {isLoading ? 'Saving...' : 'Save Changes'}
           </Button>

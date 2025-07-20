@@ -4,7 +4,7 @@
   "description": "Create React-PDF component for generating portfolio PDFs",
   "phase": "phase7",
   "priority": "critical",
-  "status": "pending",
+  "status": "completed",
   "estimatedTime": "80 minutes",
   "dependencies": ["T013"],
   "subtasks": [

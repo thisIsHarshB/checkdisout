@@ -28,11 +28,12 @@ interface AchievementFormProps {
   isLoading?: boolean;
 }
 
-export const AchievementForm: React.FC<AchievementFormProps> = ({
+export const AchievementForm: React.FC<AchievementFormProps & { resetOnCancel?: boolean }> = ({
   initialData,
   onSubmit,
   onCancel,
-  isLoading = false
+  isLoading = false,
+  resetOnCancel = false
 }) => {
   const { uploadFile, uploadProgress, isUploading } = useCloudinary();
   
@@ -100,7 +101,12 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
       ...formData,
       eventDate: new Date(formData.eventDate),
       position: formData.position ? Number(formData.position) : undefined,
-      teamMembers: formData.isSolo ? [] : formData.teamMembers
+      teamMembers: formData.isSolo ? [] : formData.teamMembers,
+      description: formData.description || '',
+      eventName: formData.eventName || '',
+      eventType: formData.eventType || 'online',
+      tags: formData.tags || [],
+      certificateUrl: formData.certificateUrl || '',
     };
 
     try {
@@ -153,387 +159,259 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({
     }));
   };
 
+  const handleReset = () => {
+    setFormData({
+      title: initialData?.title || '',
+      description: initialData?.description || '',
+      eventName: initialData?.eventName || '',
+      eventDate: initialData?.eventDate ? new Date(initialData.eventDate).toISOString().split('T')[0] : '',
+      eventType: initialData?.eventType || 'online',
+      position: initialData?.position || '',
+      isSolo: initialData?.isSolo ?? true,
+      teamMembers: initialData?.teamMembers || [],
+      certificateUrl: initialData?.certificateUrl || '',
+      tags: initialData?.tags || []
+    });
+    setErrors({});
+    setNewTag('');
+    setNewTeamMember({ name: '', role: '', linkedin: '', github: '' });
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card className="p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-            <Trophy className="h-5 w-5 text-primary" />
+      <Card className="p-8 bg-[#181A16] border-none rounded-xl shadow-[0_0_25px_rgba(0,255,255,0.1)]">
+        <div className="flex flex-col sm:flex-row items-center gap-3 mb-8">
+          <div className="w-10 h-10 bg-[#00fff7]/10 rounded-full flex items-center justify-center">
+            <Trophy className="h-5 w-5 text-[#00fff7]" />
           </div>
-          <h2 className="text-2xl font-heading font-bold text-foreground">
+          <h2 className="text-2xl font-heading font-bold text-[#7fffd4]" style={{ textShadow: '0 0 10px #7fffd4, 0 0 20px #7fffd4' }}>
             {initialData ? 'Edit Achievement' : 'Add New Achievement'}
           </h2>
         </div>
-
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Achievement Title *
-            </label>
-            <Input
-              value={formData.title}
-              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-              placeholder="e.g., First Place in Hackathon"
-              className={cn(errors.title && "border-destructive")}
-            />
-            {errors.title && (
-              <p className="text-sm text-destructive mt-1">{errors.title}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Description *
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Describe your achievement, what you accomplished, and the impact..."
-              rows={4}
-              className={cn(
-                "w-full px-3 py-2 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none",
-                errors.description && "border-destructive"
-              )}
-            />
-            {errors.description && (
-              <p className="text-sm text-destructive mt-1">{errors.description}</p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Left column */}
+          <div className="flex-1 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Event Name *
-              </label>
+              <label className="block text-base font-semibold text-white mb-2">Achievement Title *</label>
+              <Input
+                value={formData.title}
+                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                placeholder="e.g., First Place in Hackathon"
+                className={cn('w-full min-h-[44px] bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.title && 'border-destructive')}
+              />
+              {errors.title && <p className="text-xs text-destructive mt-1">{errors.title}</p>}
+            </div>
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Description *</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe your achievement, what you accomplished, and the impact..."
+                rows={4}
+                className={cn('w-full px-3 py-2 bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium resize-none', errors.description && 'border-destructive')}
+              />
+              {errors.description && <p className="text-xs text-destructive mt-1">{errors.description}</p>}
+            </div>
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Event Name *</label>
               <Input
                 value={formData.eventName}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventName: e.target.value }))}
-                placeholder="e.g., TechCrunch Hackathon 2024"
-                className={cn(errors.eventName && "border-destructive")}
+                placeholder="e.g., National Coding Olympiad"
+                className={cn('w-full min-h-[44px] bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.eventName && 'border-destructive')}
               />
-              {errors.eventName && (
-                <p className="text-sm text-destructive mt-1">{errors.eventName}</p>
-              )}
+              {errors.eventName && <p className="text-xs text-destructive mt-1">{errors.eventName}</p>}
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Event Date *
-              </label>
+              <label className="block text-base font-semibold text-white mb-2">Event Date *</label>
               <Input
                 type="date"
                 value={formData.eventDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
-                className={cn(errors.eventDate && "border-destructive")}
+                className={cn('w-full min-h-[44px] bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.eventDate && 'border-destructive')}
               />
-              {errors.eventDate && (
-                <p className="text-sm text-destructive mt-1">{errors.eventDate}</p>
-              )}
+              {errors.eventDate && <p className="text-xs text-destructive mt-1">{errors.eventDate}</p>}
             </div>
-          </div>
-        </div>
-
-        {/* Event Type and Position */}
-        <div className="space-y-4 mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Event Type
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
+              <label className="block text-base font-semibold text-white mb-2">Event Type</label>
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2 text-white">
                   <input
                     type="radio"
                     value="online"
                     checked={formData.eventType === 'online'}
                     onChange={(e) => setFormData(prev => ({ ...prev, eventType: e.target.value as 'online' | 'offline' }))}
-                    className="text-primary focus:ring-primary"
+                    className="accent-[#00fff7] w-5 h-5 focus:ring-2 focus:ring-[#00fff7] border-none"
                   />
-                  <Wifi className="h-4 w-4" />
-                  <span>Online</span>
+                  Online
                 </label>
-                <label className="flex items-center gap-2">
+                <label className="flex items-center gap-2 text-white">
                   <input
                     type="radio"
                     value="offline"
                     checked={formData.eventType === 'offline'}
                     onChange={(e) => setFormData(prev => ({ ...prev, eventType: e.target.value as 'online' | 'offline' }))}
-                    className="text-primary focus:ring-primary"
+                    className="accent-[#00fff7] w-5 h-5 focus:ring-2 focus:ring-[#00fff7] border-none"
                   />
-                  <Globe className="h-4 w-4" />
-                  <span>Offline</span>
+                  Offline
                 </label>
               </div>
             </div>
-
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Position/Ranking
-              </label>
+              <label className="block text-base font-semibold text-white mb-2">Position/Ranking</label>
               <Input
                 type="number"
                 value={formData.position}
                 onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
                 placeholder="e.g., 1 (for 1st place)"
-                className={cn(errors.position && "border-destructive")}
+                className={cn('w-full min-h-[44px] bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.position && 'border-destructive')}
               />
-              {errors.position && (
-                <p className="text-sm text-destructive mt-1">{errors.position}</p>
-              )}
+              {errors.position && <p className="text-xs text-destructive mt-1">{errors.position}</p>}
             </div>
           </div>
-        </div>
-
-        {/* Solo vs Team */}
-        <div className="space-y-4 mt-6">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Participation Type
-            </label>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={formData.isSolo}
-                  onChange={() => setFormData(prev => ({ ...prev, isSolo: true, teamMembers: [] }))}
-                  className="text-primary focus:ring-primary"
-                />
-                <User className="h-4 w-4" />
-                <span>Solo</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={!formData.isSolo}
-                  onChange={() => setFormData(prev => ({ ...prev, isSolo: false }))}
-                  className="text-primary focus:ring-primary"
-                />
-                <Users className="h-4 w-4" />
-                <span>Team</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Team Members */}
-          {!formData.isSolo && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">Team Members</span>
+          {/* Divider */}
+          <div className="hidden md:block w-px bg-[#00fff7] mx-4" />
+          {/* Right column */}
+          <div className="flex-1 space-y-6">
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Participation Type</label>
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2 text-white">
+                  <input
+                    type="radio"
+                    checked={formData.isSolo}
+                    onChange={() => setFormData(prev => ({ ...prev, isSolo: true, teamMembers: [] }))}
+                    className="accent-[#00fff7] w-5 h-5 focus:ring-2 focus:ring-[#00fff7] border-none"
+                  />
+                  Solo
+                </label>
+                <label className="flex items-center gap-2 text-white">
+                  <input
+                    type="radio"
+                    checked={!formData.isSolo}
+                    onChange={() => setFormData(prev => ({ ...prev, isSolo: false }))}
+                    className="accent-[#00fff7] w-5 h-5 focus:ring-2 focus:ring-[#00fff7] border-none"
+                  />
+                  Team
+                </label>
               </div>
-              
-              {formData.teamMembers.length > 0 && (
-                <div className="space-y-2">
-                  {formData.teamMembers.map((member, index) => (
-                    <div key={index} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{member.name}</p>
-                        {member.role && (
-                          <p className="text-sm text-muted-foreground">{member.role}</p>
-                        )}
+            </div>
+            {/* Team Members - only show if Team is selected */}
+            {!formData.isSolo && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-[#00fff7]" />
+                  <span className="text-base font-medium text-white">Team Members</span>
+                </div>
+                {formData.teamMembers.length > 0 && (
+                  <div className="space-y-2">
+                    {formData.teamMembers.map((member, index) => (
+                      <div key={index} className="flex items-center gap-2 p-3 bg-[#23272a] rounded-lg">
+                        <div className="flex-1">
+                          <p className="font-medium text-white">{member.name}</p>
+                          {member.role && (
+                            <p className="text-sm text-[#00fff7]">{member.role}</p>
+                          )}
+                        </div>
+                        <Button type="button" size="sm" variant="ghost" onClick={() => removeTeamMember(index)} className="text-destructive hover:text-destructive">
+                          <X className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeTeamMember(index)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    ))}
+                  </div>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#181A16] rounded-lg">
+                  <div>
+                    <label className="block text-base font-medium text-white mb-1">Name *</label>
+                    <Input
+                      value={newTeamMember.name}
+                      onChange={(e) => setNewTeamMember(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Team member name"
+                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-base font-medium text-white mb-1">Role</label>
+                    <Input
+                      value={newTeamMember.role}
+                      onChange={(e) => setNewTeamMember(prev => ({ ...prev, role: e.target.value }))}
+                      placeholder="e.g., Frontend Developer"
+                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-base font-medium text-white mb-1">LinkedIn</label>
+                    <Input
+                      value={newTeamMember.linkedin}
+                      onChange={(e) => setNewTeamMember(prev => ({ ...prev, linkedin: e.target.value }))}
+                      placeholder="LinkedIn profile URL"
+                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Button type="button" onClick={addTeamMember} disabled={!newTeamMember.name.trim()} className="gap-2 bg-[#00fff7] text-black rounded-full px-4 py-2 font-bold">
+                      <Plus className="h-4 w-4" />
+                      Add Team Member
+                    </Button>
+                  </div>
+                </div>
+                {errors.teamMembers && <p className="text-sm text-destructive">{errors.teamMembers}</p>}
+              </div>
+            )}
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Certificate</label>
+              <Input
+                value={formData.certificateUrl}
+                onChange={(e) => setFormData(prev => ({ ...prev, certificateUrl: e.target.value }))}
+                placeholder="Certificate URL or upload"
+                className="w-full min-h-[44px] bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
+              />
+            </div>
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Tags</label>
+              <div className="flex gap-2">
+                <Input
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  placeholder="Add a tag"
+                  className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                />
+                <Button type="button" onClick={addTag} disabled={!newTag.trim()} className="gap-2 bg-[#00fff7] text-black rounded-full px-4 py-2 font-bold">+
+                </Button>
+              </div>
+              {formData.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.tags.map((tag, index) => (
+                    <span key={index} className="flex items-center gap-1 px-3 py-1 bg-[#00fff7]/10 text-[#00fff7] border border-[#00fff7]/20 rounded-full text-sm">
+                      {tag}
+                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-[#00fff7]/80">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
                   ))}
                 </div>
               )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-border rounded-lg">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    Name *
-                  </label>
-                  <Input
-                    value={newTeamMember.name}
-                    onChange={(e) => setNewTeamMember(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Team member name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    Role
-                  </label>
-                  <Input
-                    value={newTeamMember.role}
-                    onChange={(e) => setNewTeamMember(prev => ({ ...prev, role: e.target.value }))}
-                    placeholder="e.g., Frontend Developer"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    LinkedIn
-                  </label>
-                  <Input
-                    value={newTeamMember.linkedin}
-                    onChange={(e) => setNewTeamMember(prev => ({ ...prev, linkedin: e.target.value }))}
-                    placeholder="LinkedIn profile URL"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    GitHub
-                  </label>
-                  <Input
-                    value={newTeamMember.github}
-                    onChange={(e) => setNewTeamMember(prev => ({ ...prev, github: e.target.value }))}
-                    placeholder="GitHub profile URL"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Button
-                    type="button"
-                    onClick={addTeamMember}
-                    disabled={!newTeamMember.name.trim()}
-                    className="gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Team Member
-                  </Button>
-                </div>
-              </div>
-              
-              {errors.teamMembers && (
-                <p className="text-sm text-destructive">{errors.teamMembers}</p>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Certificate Upload */}
-        <div className="space-y-4 mt-6">
-          <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Certificate</span>
-          </div>
-          
-          <div className="space-y-4">
-            {formData.certificateUrl && (
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-2">Certificate uploaded:</p>
-                <a
-                  href={formData.certificateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:text-primary/80 text-sm"
-                >
-                  View Certificate
-                </a>
-              </div>
-            )}
-            
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-              <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground mb-2">
-                Upload certificate (PDF, JPG, PNG)
-              </p>
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    handleFileUpload(file);
-                  }
-                }}
-                className="hidden"
-                id="certificate-upload"
-                disabled={isUploading}
-              />
-              <label
-                htmlFor="certificate-upload"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer disabled:opacity-50"
-              >
-                {isUploading ? 'Uploading...' : 'Choose File'}
-              </label>
-              
-              {isUploading && uploadProgress > 0 && (
-                <div className="mt-2">
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{uploadProgress}%</p>
-                </div>
-              )}
             </div>
           </div>
         </div>
-
-        {/* Tags */}
-        <div className="space-y-4 mt-6">
-          <div className="flex items-center gap-2">
-            <Tag className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Tags</span>
-          </div>
-          
-          <div className="space-y-3">
-            {formData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {formData.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-sm"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="hover:text-primary/80"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-            
-            <div className="flex gap-2">
-              <Input
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                placeholder="Add a tag"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-              />
-              <Button
-                type="button"
-                onClick={addTag}
-                disabled={!newTag.trim()}
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add
-              </Button>
-            </div>
-          </div>
-        </div>
-
         {/* Form Actions */}
-        <div className="flex items-center justify-end gap-4 pt-6 border-t border-border">
+        <div className="flex justify-between mt-8">
           <Button
             type="button"
             variant="outline"
-            onClick={onCancel}
+            onClick={resetOnCancel ? handleReset : onCancel}
+            className="w-32 py-3 rounded-lg font-bold text-lg bg-[#23272a] text-white border-none"
             disabled={isLoading}
           >
-            Cancel
+            Reset
           </Button>
           <Button
             type="submit"
-            disabled={isLoading || isUploading}
-            className="gap-2"
+            disabled={isLoading}
+            className="w-32 py-3 rounded-lg font-bold text-lg bg-[#7c3aed] text-white shadow-[0_0_12px_rgba(124,58,237,0.7)] hover:bg-[#a78bfa] border-none"
           >
-            {isLoading ? 'Saving...' : (initialData ? 'Update Achievement' : 'Add Achievement')}
+            {isLoading ? 'Saving...' : (initialData ? 'Update Achievement' : 'Submit')}
           </Button>
         </div>
       </Card>

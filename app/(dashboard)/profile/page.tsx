@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { updateUser } from '@/lib/hooks/useFirestore';
+import { useUser } from '@/lib/hooks/useFirestore';
 
 interface DropdownSection {
   id: string;
@@ -46,6 +46,7 @@ export default function ProfilePage() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [expandedSections, setExpandedSections] = useState<string[]>(['basic-info']);
   const [isSaving, setIsSaving] = useState(false);
+  const { updateUser } = useUser();
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => 

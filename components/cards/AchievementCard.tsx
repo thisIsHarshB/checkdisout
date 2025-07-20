@@ -1,40 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Achievement, TeamMember } from '@/lib/types';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import { Achievement } from '@/lib/types'; // NOTE: Assumes this type is updated to include all new fields from your DB
 import { Card } from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import { Modal } from '@/components/ui/Modal';
-import { DeleteModal } from '@/components/ui/DeleteModal';
-import { 
-  Trophy, 
-  Users, 
-  User, 
-  Calendar, 
-  MapPin, 
-  Wifi, 
-  Globe, 
-  Edit, 
-  Trash2, 
-  Share2, 
-  ExternalLink,
-  Award,
-  Tag,
-  FileText,
-  CheckCircle,
-  XCircle
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { shareItem } from '@/lib/utils/sharing';
-import Image from 'next/image';
+import { ExternalLink } from 'lucide-react';
 
 interface AchievementCardProps {
   achievement: Achievement;
-  onEdit?: (id: string) => void;
+  onEdit?: (id: string, updatedData: Partial<Achievement>) => void;
   onDelete?: (id: string) => void;
   onShare?: (id: string) => void;
   className?: string;
 }
+
+const formatEventDate = (startDate: Date, endDate?: Date): string => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+  const startStr = new Date(startDate).toLocaleDateString('en-US', options);
+
+  if (endDate) {
+    const endStr = new Date(endDate).toLocaleDateString('en-US', options);
+    return `${startStr} - ${endStr}`;
+  }
+  
+  return startStr;
+};
+
 
 export const AchievementCard: React.FC<AchievementCardProps> = ({
   achievement,
@@ -43,346 +38,197 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
   onShare,
   className
 }) => {
-  const [showCertificate, setShowCertificate] = useState(false);
-  const [showTeamMembers, setShowTeamMembers] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
-  const [shareFeedback, setShareFeedback] = useState<{
-    show: boolean;
-    success: boolean;
-    message: string;
-  }>({ show: false, success: false, message: '' });
+  
+  const [isEditing, setIsEditing] = useState(false);
+  // Expanded state to include all fields from the database
+  const [editedData, setEditedData] = useState({
+    title: achievement.title || '',
+    position: achievement.position || '',
+    eventName: achievement.eventName || '',
+    description: achievement.description || '',
+    eventDate: new Date(achievement.eventDate).toISOString().split('T')[0],
+    eventType: achievement.eventType || 'online',
+    isSolo: achievement.isSolo || false,
+    tags: achievement.tags || [],
+    certificateUrl: achievement.certificateUrl || '',
+  });
 
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+  const descriptionRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Style definitions
+  const fieldLabelStyle = "block text-sm font-semibold mb-2 text-neutral-300";
+  const inputFieldStyle = "w-full bg-[#2a2a2e] rounded-lg px-4 py-2.5 text-white font-semibold shadow-[0_0_12px_rgba(0,255,255,0.25)] focus:outline-none focus:ring-2 focus:ring-cyan-400";
+  const displayFieldStyle = "w-full bg-[#2a2a2e] rounded-lg px-4 py-2.5 text-white font-semibold shadow-[0_0_12px_rgba(0,255,255,0.25)] min-h-[46px]";
+  const displayTextAreaStyle = "w-full bg-[#2a2a2e] rounded-lg px-4 py-2.5 text-white font-semibold shadow-[0_0_12px_rgba(0,255,255,0.25)] resize-none overflow-hidden block";
+  const badgeStyle = "px-3 py-1 text-xs font-semibold rounded-full bg-cyan-400/20 text-cyan-300";
+  const tagBadgeStyle = "px-3 py-1 text-xs font-medium rounded-full bg-neutral-700 text-neutral-300";
+
+  useLayoutEffect(() => {
+    if (descriptionRef.current) {
+      descriptionRef.current.style.height = 'auto';
+      descriptionRef.current.style.height = `${descriptionRef.current.scrollHeight}px`;
+    }
+  }, [isEditing, editedData.description]);
+
+  // Updated handler to include Select elements
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditedData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setEditedData(prev => ({...prev, [name]: checked }));
+  };
+
+  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const tags = value.split(',').map(tag => tag.trim()).filter(Boolean); // filter Boolean removes empty tags
+    setEditedData(prev => ({ ...prev, tags }));
+  };
+
+  const handleSave = () => {
+    if (onEdit) {
+      const dataToSave = {
+        ...editedData,
+        eventDate: new Date(editedData.eventDate),
+        position: editedData.position === '' ? undefined : Number(editedData.position),
+      };
+      onEdit(achievement.id, dataToSave);
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    // Reset state to include all original achievement data
+    setEditedData({
+      title: achievement.title || '',
+      position: achievement.position || '',
+      eventName: achievement.eventName || '',
+      description: achievement.description || '',
+      eventDate: new Date(achievement.eventDate).toISOString().split('T')[0],
+      eventType: achievement.eventType || 'online',
+      isSolo: achievement.isSolo || false,
+      tags: achievement.tags || [],
+      certificateUrl: achievement.certificateUrl || '',
     });
+    setIsEditing(false);
   };
 
-  const getPositionText = (position: number) => {
-    if (position === 1) return '1st Place';
-    if (position === 2) return '2nd Place';
-    if (position === 3) return '3rd Place';
-    return `${position}th Place`;
-  };
-
-  const getPositionColor = (position: number) => {
-    if (position === 1) return 'text-yellow-500';
-    if (position === 2) return 'text-gray-400';
-    if (position === 3) return 'text-amber-600';
-    return 'text-primary';
-  };
-
-  const handleShare = async () => {
-    setIsSharing(true);
-    try {
-      const result = await shareItem('achievement', achievement);
-      
-      if (result.success) {
-        setShareFeedback({
-          show: true,
-          success: true,
-          message: result.method === 'native' 
-            ? 'Shared successfully!' 
-            : 'Link copied to clipboard!'
-        });
-      } else {
-        setShareFeedback({
-          show: true,
-          success: false,
-          message: 'Failed to share. Please try again.'
-        });
-      }
-    } catch (error) {
-      setShareFeedback({
-        show: true,
-        success: false,
-        message: 'Error sharing achievement.'
-      });
-    } finally {
-      setIsSharing(false);
-      setTimeout(() => setShareFeedback({ show: false, success: false, message: '' }), 3000);
-    }
-  };
-
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    try {
-      if (onDelete) {
-        await onDelete(achievement.id);
-      }
-      setShowDeleteModal(false);
-    } catch (error) {
-      console.error('Error deleting achievement:', error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  return (
+  // Helper function to render the display view for clarity
+  const renderDisplayView = () => (
     <>
-      <Card className={cn("p-6 hover:shadow-lg transition-all duration-300 group", className)}>
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-full">
-              <Trophy className="h-5 w-5 text-primary" />
-            </div>
+      <div className='space-y-4'>
+        <div>
+            <label className={fieldLabelStyle}>Competition Name</label>
+            <div className={displayFieldStyle}>{achievement.title}</div>
+        </div>
+        <div>
+            <label className={fieldLabelStyle}>Position</label>
+            <div className={displayFieldStyle}>{achievement.position}</div>
+        </div>
+        <div>
+            <label className={fieldLabelStyle}>Competition Date</label>
+            <div className={displayFieldStyle}>{formatEventDate(achievement.eventDate)}</div>
+        </div>
+        <div>
+            <label className={fieldLabelStyle}>Organizing Body</label>
+            <div className={displayFieldStyle}>{achievement.eventName || ''}</div>
+        </div>
+        {achievement.description && (
             <div>
-              <h3 className="font-semibold text-foreground text-lg group-hover:text-primary transition-colors">
-                {achievement.title}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {achievement.eventName}
-              </p>
+            <label className={fieldLabelStyle}>Description</label>
+            <div ref={descriptionRef as unknown as React.RefObject<HTMLDivElement>} className={displayTextAreaStyle}>{achievement.description}</div>
             </div>
-          </div>
-          
-          {/* Position Badge */}
-          {achievement.position && (
-            <div className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium bg-primary/10",
-              getPositionColor(achievement.position)
-            )}>
-              {getPositionText(achievement.position)}
-            </div>
+        )}
+      </div>
+      <div className="space-y-4 mt-2">
+        <div className="flex flex-wrap items-center gap-4">
+          <span className={badgeStyle}>{achievement.eventType}</span>
+          <span className={badgeStyle}>{achievement.isSolo ? 'Solo Effort' : 'Team Effort'}</span>
+          {achievement.certificateUrl && (
+            <a href={achievement.certificateUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-1.5 text-sm font-semibold rounded-lg bg-purple-600/90 hover:bg-purple-600 text-white transition-colors">
+              View Certificate <ExternalLink size={16} />
+            </a>
           )}
         </div>
-
-        {/* Description */}
-        <p className="text-muted-foreground mb-4 line-clamp-3">
-          {achievement.description}
-        </p>
-
-        {/* Event Details */}
-        <div className="space-y-3 mb-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>{formatDate(achievement.eventDate)}</span>
-          </div>
-          
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            {achievement.eventType === 'online' ? (
-              <Wifi className="h-4 w-4" />
-            ) : (
-              <Globe className="h-4 w-4" />
-            )}
-            <span className="capitalize">{achievement.eventType} Event</span>
-          </div>
-
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            {achievement.isSolo ? (
-              <User className="h-4 w-4" />
-            ) : (
-              <Users className="h-4 w-4" />
-            )}
-            <span>{achievement.isSolo ? 'Solo Achievement' : 'Team Achievement'}</span>
-          </div>
-        </div>
-
-        {/* Team Members */}
-        {!achievement.isSolo && achievement.teamMembers && achievement.teamMembers.length > 0 && (
-          <div className="mb-4">
-            <button
-              onClick={() => setShowTeamMembers(!showTeamMembers)}
-              className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
-            >
-              <Users className="h-4 w-4" />
-              <span>View Team Members ({achievement.teamMembers.length})</span>
-            </button>
-            
-            {showTeamMembers && (
-              <div className="mt-3 space-y-2">
-                {achievement.teamMembers.map((member, index) => (
-                  <div key={index} className="flex items-center gap-3 p-2 bg-muted/50 rounded-lg">
-                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-medium text-primary">
-                        {member.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">{member.name}</p>
-                      {member.role && (
-                        <p className="text-xs text-muted-foreground">{member.role}</p>
-                      )}
-                    </div>
-                    <div className="flex gap-1">
-                      {member.linkedin && (
-                        <a
-                          href={member.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1 text-blue-600 hover:text-blue-700 transition-colors"
-                        >
-                          <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                          </svg>
-                        </a>
-                      )}
-                      {member.github && (
-                        <a
-                          href={member.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-1 text-gray-800 hover:text-gray-900 transition-colors"
-                        >
-                          <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                          </svg>
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Tags */}
-        {achievement.tags.length > 0 && (
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Tag className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Tags</span>
-            </div>
+        {achievement.tags?.length > 0 && (
+          <div>
+            <label className={fieldLabelStyle}>Tags</label>
             <div className="flex flex-wrap gap-2">
-              {achievement.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-full"
-                >
-                  {tag}
-                </span>
-              ))}
+              {achievement.tags.map((tag, index) => <span key={index} className={tagBadgeStyle}>{tag}</span>)}
             </div>
           </div>
         )}
-
-        {/* Certificate */}
-        {achievement.certificateUrl && (
-          <div className="mb-4">
-            <button
-              onClick={() => setShowCertificate(true)}
-              className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
-            >
-              <FileText className="h-4 w-4" />
-              <span>View Certificate</span>
-            </button>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-4 border-t border-border">
-          <div className="flex gap-2">
-            {onEdit && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => onEdit(achievement.id)}
-                className="gap-2"
-              >
-                <Edit className="h-4 w-4" />
-                Edit
-              </Button>
-            )}
-            {onDelete && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setShowDeleteModal(true)}
-                className="gap-2 text-destructive hover:text-destructive"
-              >
-                <Trash2 className="h-4 w-4" />
-                Delete
-              </Button>
-            )}
-          </div>
-          
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleShare}
-            disabled={isSharing}
-            className="gap-2"
-          >
-            {isSharing ? (
-              <>
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                Sharing...
-              </>
-            ) : (
-              <>
-                <Share2 className="h-4 w-4" />
-                Share
-              </>
-            )}
-          </Button>
-        </div>
-
-        {/* Share Feedback */}
-        {shareFeedback.show && (
-          <div className={cn(
-            "fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg transition-all duration-300",
-            shareFeedback.success 
-              ? "bg-green-100 text-green-800 border border-green-200" 
-              : "bg-red-100 text-red-800 border border-red-200"
-          )}>
-            {shareFeedback.success ? (
-              <CheckCircle className="h-4 w-4" />
-            ) : (
-              <XCircle className="h-4 w-4" />
-            )}
-            <span className="text-sm font-medium">{shareFeedback.message}</span>
-          </div>
-        )}
-      </Card>
-
-      {/* Certificate Modal */}
-      {showCertificate && achievement.certificateUrl && (
-        <Modal
-          isOpen={showCertificate}
-          onClose={() => setShowCertificate(false)}
-          title="Certificate"
-          size="lg"
-        >
-          <div className="space-y-4">
-            <div className="relative aspect-[3/2] bg-muted rounded-lg overflow-hidden">
-              <Image
-                src={achievement.certificateUrl}
-                alt="Certificate"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <div className="flex justify-end">
-              <a
-                href={achievement.certificateUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-              >
-                <ExternalLink className="h-4 w-4" />
-                <span>Open in new tab</span>
-              </a>
-            </div>
-          </div>
-        </Modal>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      <DeleteModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={handleDelete}
-        title="Delete Achievement"
-        description="Are you sure you want to delete this achievement? This action cannot be undone."
-        itemName={achievement.title}
-        isLoading={isDeleting}
-      />
+      </div>
     </>
   );
-}; 
+
+  // Helper function to render the edit view
+  const renderEditView = () => (
+    <div className='space-y-4'>
+      <div>
+        <label className={fieldLabelStyle}>Competition Name</label>
+        <input type="text" name="title" value={editedData.title} onChange={handleInputChange} className={inputFieldStyle} />
+      </div>
+      <div>
+        <label className={fieldLabelStyle}>Position</label>
+        <input type="text" name="position" value={editedData.position} onChange={handleInputChange} className={inputFieldStyle} />
+      </div>
+      <div>
+        <label className={fieldLabelStyle}>Competition Date</label>
+        <input type="date" name="eventDate" value={editedData.eventDate} onChange={handleInputChange} className={inputFieldStyle} />
+      </div>
+      <div>
+        <label className={fieldLabelStyle}>Organizing Body</label>
+        <input type="text" name="eventName" value={editedData.eventName} onChange={handleInputChange} className={inputFieldStyle} />
+      </div>
+      <div>
+        <label className={fieldLabelStyle}>Description</label>
+        <textarea name="description" ref={descriptionRef} value={editedData.description} onChange={handleInputChange} rows={1} className={`${inputFieldStyle} resize-none overflow-hidden`} />
+      </div>
+      <div>
+        <label className={fieldLabelStyle}>Certificate URL</label>
+        <input type="text" name="certificateUrl" value={editedData.certificateUrl} onChange={handleInputChange} className={inputFieldStyle} placeholder="https://example.com/certificate.pdf"/>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className={fieldLabelStyle}>Event Type</label>
+          <select name="eventType" value={editedData.eventType} onChange={handleInputChange} className={inputFieldStyle}>
+            <option value="online">Online</option>
+            <option value="offline">Offline</option>
+          </select>
+        </div>
+        <div className="flex items-center pt-8">
+            <input type="checkbox" id={`isSolo-${achievement.id}`} name="isSolo" checked={editedData.isSolo} onChange={handleCheckboxChange} className="h-5 w-5 rounded accent-cyan-400" />
+            <label htmlFor={`isSolo-${achievement.id}`} className="ml-2 text-neutral-300 select-none">Solo Effort</label>
+        </div>
+      </div>
+      <div>
+          <label className={fieldLabelStyle}>Tags (comma-separated)</label>
+          <input type="text" name="tags" value={editedData.tags.join(', ')} onChange={handleTagsChange} className={inputFieldStyle} placeholder="Web Dev, Hackathon, ..."/>
+      </div>
+    </div>
+  );
+
+  return (
+    <Card className={cn("p-6 bg-[#1a1a1a] border-none rounded-xl shadow-[0_0_25px_rgba(0,255,255,0.1)] flex flex-col gap-4", className)}>
+      {isEditing ? renderEditView() : renderDisplayView()}
+      
+      <div className="flex gap-4 mt-4">
+        {isEditing ? (
+          <>
+            <button className="flex-1 text-white font-bold py-2.5 rounded-lg transition-all bg-neutral-600/90 hover:bg-neutral-600 shadow-lg" onClick={handleCancel}>Cancel</button>
+            <button className="flex-1 text-black font-bold py-2.5 rounded-lg transition-all bg-cyan-400 hover:bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)] hover:shadow-[0_0_18px_rgba(34,211,238,1)]" onClick={handleSave}>Save</button>
+          </>
+        ) : (
+          <>
+            <button className="flex-1 text-white font-bold py-2.5 rounded-lg transition-all bg-red-600/90 hover:bg-red-600 shadow-[0_0_12px_rgba(239,68,68,0.7)] hover:shadow-[0_0_18px_rgba(239,68,68,0.9)]" onClick={() => onDelete && onDelete(achievement.id)}>Delete</button>
+            <button className="flex-1 text-black font-bold py-2.5 rounded-lg transition-all bg-cyan-400 hover:bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)] hover:shadow-[0_0_18px_rgba(34,211,238,1)]" onClick={() => setIsEditing(true)}>Edit</button>
+            <button className="flex-1 text-white font-bold py-2.5 rounded-lg transition-all bg-purple-600/90 hover:bg-purple-600 shadow-[0_0_12px_rgba(147,51,234,0.7)] hover:shadow-[0_0_18px_rgba(147,51,234,0.9)]" onClick={() => onShare && onShare(achievement.id)}>Share</button>
+          </>
+        )}
+      </div>
+    </Card>
+  );
+};

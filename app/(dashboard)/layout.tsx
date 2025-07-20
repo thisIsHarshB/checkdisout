@@ -29,7 +29,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <UserDataProvider>
         <div className="min-h-screen bg-background">
           <Navbar />
-          <main className="lg:ml-64 transition-all duration-300">
+          <main className="lg:ml-24 transition-all duration-300">
             {children}
           </main>
         </div>

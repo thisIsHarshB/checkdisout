@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CheckDisOut - Achievement Aggregator
 
-## Getting Started
+## Overview
+CheckDisOut is a web app to track and showcase your achievements, participations, and projects. Built with Next.js, Firebase, and Cloudinary.
 
-First, run the development server:
+## Features
+- User authentication (Firebase)
+- Add, edit, and delete achievements, participations, and projects
+- Portfolio PDF export
+- Responsive, accessible UI
+- Image uploads (Cloudinary)
+- SEO, accessibility, and performance optimizations
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup Instructions
+1. **Clone the repo:**
+   ```bash
+   git clone https://github.com/your-org/checkdisout.git
+   cd checkdisout
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Configure environment variables:**
+   - Copy `.env.example` to `.env.local` and fill in your Firebase, Cloudinary, and app config.
+4. **Run the app locally:**
+   ```bash
+   npm run dev
+   ```
+5. **Run tests:**
+   ```bash
+   npm test
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
+See `.env.example` for all required variables.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
+- Deploy to Vercel for best results.
+- Ensure all environment variables are set in the Vercel dashboard.
+- See `vercel.json` for configuration.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentation
+- [SETUP.md](./SETUP.md): Step-by-step setup
+- [USER_GUIDE.md](./USER_GUIDE.md): User guide
+- [TROUBLESHOOTING.md](./TROUBLESHOOTING.md): Troubleshooting
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+MIT

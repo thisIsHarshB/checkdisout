@@ -65,6 +65,7 @@ export default function TestAuthPage() {
                   src={user.photoURL} 
                   alt="Profile" 
                   className="w-12 h-12 rounded-full mt-2"
+                  loading="lazy"
                 />
               )}
               <button

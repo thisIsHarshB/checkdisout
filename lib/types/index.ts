@@ -9,7 +9,7 @@ export interface User {
   phone?: string;
   location?: string;
   bio?: string;
-  profilePictureUrl?: string; // Cloudinary URL
+  profilePictureURL?: string; // Cloudinary URL
   website?: string;
   github?: string;
   linkedin?: string;
@@ -70,9 +70,6 @@ export interface Project {
   name: string;
   description: string;
   githubUrl?: string;
-  liveUrl?: string;
-  bannerImageUrl?: string; // Cloudinary URL
-  bannerImagePublicId?: string; // For deletion
   isSolo: boolean;
   teamMembers?: TeamMember[];
   technologies: string[]; // e.g., ["React", "Node.js", "MongoDB"]

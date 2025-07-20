@@ -16,10 +16,13 @@ import {
   DocumentSnapshot,
   writeBatch,
   serverTimestamp,
-  Timestamp
+  Timestamp,
+  startAfter,
+  QueryConstraint
 } from 'firebase/firestore';
 import { db } from './config';
 import { User, Achievement, Participation, Project } from '@/lib/types';
+import { useUserData } from '@/lib/context/UserDataContext';
 
 // ============================================================================
 // TYPES
@@ -48,6 +51,7 @@ export interface FirestoreQueryOptions {
     operator: '==' | '!=' | '<' | '<=' | '>' | '>=';
     value: any;
   }[];
+  startAfter?: DocumentSnapshot; // Added for pagination
 }
 
 // ============================================================================
@@ -187,22 +191,11 @@ export const userHelpers = {
   // Get all users
   async getAll(options?: FirestoreQueryOptions): Promise<FirestoreListResponse<User>> {
     try {
-      let q = collection(db, USERS_COLLECTION);
-
-      if (options?.where) {
-        options.where.forEach(condition => {
-          q = query(q, where(condition.field, condition.operator, condition.value));
-        });
-      }
-
-      if (options?.orderBy) {
-        q = query(q, orderBy(options.orderBy.field, options.orderBy.direction));
-      }
-
-      if (options?.limit) {
-        q = query(q, limit(options.limit));
-      }
-
+      const constraints: QueryConstraint[] = [];
+      if (options?.where) options.where.forEach(condition => constraints.push(where(condition.field, condition.operator, condition.value)));
+      if (options?.orderBy) constraints.push(orderBy(options.orderBy.field, options.orderBy.direction));
+      if (options?.limit) constraints.push(limit(options.limit));
+      const q = query(collection(db, USERS_COLLECTION), ...constraints);
       const querySnapshot = await getDocs(q);
       const users: User[] = [];
 
@@ -283,21 +276,11 @@ export const achievementHelpers = {
   // Get achievements by user ID
   async getByUserId(userId: string, options?: FirestoreQueryOptions): Promise<FirestoreListResponse<Achievement>> {
     try {
-      let q = query(
-        collection(db, ACHIEVEMENTS_COLLECTION),
-        where('userId', '==', userId)
-      );
-
-      if (options?.orderBy) {
-        q = query(q, orderBy(options.orderBy.field, options.orderBy.direction));
-      } else {
-        q = query(q, orderBy('eventDate', 'desc'));
-      }
-
-      if (options?.limit) {
-        q = query(q, limit(options.limit));
-      }
-
+      const constraints: QueryConstraint[] = [where('userId', '==', userId)];
+      if (options?.orderBy) constraints.push(orderBy(options.orderBy.field, options.orderBy.direction));
+      if (options?.startAfter) constraints.push(startAfter(options.startAfter));
+      if (options?.limit) constraints.push(limit(options.limit));
+      const q = query(collection(db, ACHIEVEMENTS_COLLECTION), ...constraints);
       const querySnapshot = await getDocs(q);
       const achievements: Achievement[] = [];
 
@@ -353,25 +336,12 @@ export const achievementHelpers = {
   // Get all achievements
   async getAll(options?: FirestoreQueryOptions): Promise<FirestoreListResponse<Achievement>> {
     try {
-      let q = collection(db, ACHIEVEMENTS_COLLECTION);
-
-      if (options?.where) {
-        options.where.forEach(condition => {
-          q = query(q, where(condition.field, condition.operator, condition.value));
-        });
-      }
-
-      if (options?.orderBy) {
-        q = query(q, orderBy(options.orderBy.field, options.orderBy.direction));
-      } else {
-        q = query(q, orderBy('eventDate', 'desc'));
-      }
-
-      if (options?.limit) {
-        q = query(q, limit(options.limit));
-      }
-
-      const querySnapshot = await getDocs(q);
+      const constraints: QueryConstraint[] = [];
+      if (options?.where) options.where.forEach(condition => constraints.push(where(condition.field, condition.operator, condition.value)));
+      if (options?.orderBy) constraints.push(orderBy(options.orderBy.field, options.orderBy.direction));
+      else constraints.push(orderBy('eventDate', 'desc'));
+      if (options?.limit) constraints.push(limit(options.limit));
+      const querySnapshot = await getDocs(query(collection(db, ACHIEVEMENTS_COLLECTION), ...constraints));
       const achievements: Achievement[] = [];
 
       querySnapshot.forEach((doc) => {
@@ -452,21 +422,11 @@ export const participationHelpers = {
   // Get participations by user ID
   async getByUserId(userId: string, options?: FirestoreQueryOptions): Promise<FirestoreListResponse<Participation>> {
     try {
-      let q = query(
-        collection(db, PARTICIPATIONS_COLLECTION),
-        where('userId', '==', userId)
-      );
-
-      if (options?.orderBy) {
-        q = query(q, orderBy(options.orderBy.field, options.orderBy.direction));
-      } else {
-        q = query(q, orderBy('eventDate', 'desc'));
-      }
-
-      if (options?.limit) {
-        q = query(q, limit(options.limit));
-      }
-
+      const constraints: QueryConstraint[] = [where('userId', '==', userId)];
+      if (options?.orderBy) constraints.push(orderBy(options.orderBy.field, options.orderBy.direction));
+      if (options?.startAfter) constraints.push(startAfter(options.startAfter));
+      if (options?.limit) constraints.push(limit(options.limit));
+      const q = query(collection(db, PARTICIPATIONS_COLLECTION), ...constraints);
       const querySnapshot = await getDocs(q);
       const participations: Participation[] = [];
 
@@ -522,25 +482,12 @@ export const participationHelpers = {
   // Get all participations
   async getAll(options?: FirestoreQueryOptions): Promise<FirestoreListResponse<Participation>> {
     try {
-      let q = collection(db, PARTICIPATIONS_COLLECTION);
-
-      if (options?.where) {
-        options.where.forEach(condition => {
-          q = query(q, where(condition.field, condition.operator, condition.value));
-        });
-      }
-
-      if (options?.orderBy) {
-        q = query(q, orderBy(options.orderBy.field, options.orderBy.direction));
-      } else {
-        q = query(q, orderBy('eventDate', 'desc'));
-      }
-
-      if (options?.limit) {
-        q = query(q, limit(options.limit));
-      }
-
-      const querySnapshot = await getDocs(q);
+      const constraints: QueryConstraint[] = [];
+      if (options?.where) options.where.forEach(condition => constraints.push(where(condition.field, condition.operator, condition.value)));
+      if (options?.orderBy) constraints.push(orderBy(options.orderBy.field, options.orderBy.direction));
+      else constraints.push(orderBy('eventDate', 'desc'));
+      if (options?.limit) constraints.push(limit(options.limit));
+      const querySnapshot = await getDocs(query(collection(db, PARTICIPATIONS_COLLECTION), ...constraints));
       const participations: Participation[] = [];
 
       querySnapshot.forEach((doc) => {
@@ -619,21 +566,11 @@ export const projectHelpers = {
   // Get projects by user ID
   async getByUserId(userId: string, options?: FirestoreQueryOptions): Promise<FirestoreListResponse<Project>> {
     try {
-      let q = query(
-        collection(db, PROJECTS_COLLECTION),
-        where('userId', '==', userId)
-      );
-
-      if (options?.orderBy) {
-        q = query(q, orderBy(options.orderBy.field, options.orderBy.direction));
-      } else {
-        q = query(q, orderBy('createdAt', 'desc'));
-      }
-
-      if (options?.limit) {
-        q = query(q, limit(options.limit));
-      }
-
+      const constraints: QueryConstraint[] = [where('userId', '==', userId)];
+      if (options?.orderBy) constraints.push(orderBy(options.orderBy.field, options.orderBy.direction));
+      if (options?.startAfter) constraints.push(startAfter(options.startAfter));
+      if (options?.limit) constraints.push(limit(options.limit));
+      const q = query(collection(db, PROJECTS_COLLECTION), ...constraints);
       const querySnapshot = await getDocs(q);
       const projects: Project[] = [];
 
@@ -687,25 +624,12 @@ export const projectHelpers = {
   // Get all projects
   async getAll(options?: FirestoreQueryOptions): Promise<FirestoreListResponse<Project>> {
     try {
-      let q = collection(db, PROJECTS_COLLECTION);
-
-      if (options?.where) {
-        options.where.forEach(condition => {
-          q = query(q, where(condition.field, condition.operator, condition.value));
-        });
-      }
-
-      if (options?.orderBy) {
-        q = query(q, orderBy(options.orderBy.field, options.orderBy.direction));
-      } else {
-        q = query(q, orderBy('createdAt', 'desc'));
-      }
-
-      if (options?.limit) {
-        q = query(q, limit(options.limit));
-      }
-
-      const querySnapshot = await getDocs(q);
+      const constraints: QueryConstraint[] = [];
+      if (options?.where) options.where.forEach(condition => constraints.push(where(condition.field, condition.operator, condition.value)));
+      if (options?.orderBy) constraints.push(orderBy(options.orderBy.field, options.orderBy.direction));
+      else constraints.push(orderBy('createdAt', 'desc'));
+      if (options?.limit) constraints.push(limit(options.limit));
+      const querySnapshot = await getDocs(query(collection(db, PROJECTS_COLLECTION), ...constraints));
       const projects: Project[] = [];
 
       querySnapshot.forEach((doc) => {
@@ -739,17 +663,16 @@ export const batchHelpers = {
     try {
       const batch = writeBatch(db);
       const docRefs: string[] = [];
-
-      documents.forEach((doc) => {
-        const docRef = doc(collection(db, collectionName));
+      const colRef = collection(db, collectionName);
+      documents.forEach((docData) => {
+        const docRef = doc(colRef);
         batch.set(docRef, {
-          ...doc,
+          ...docData,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         });
         docRefs.push(docRef.id);
       });
-
       await batch.commit();
       return { success: true, data: docRefs };
     } catch (error) {

@@ -86,26 +86,46 @@ export const useAchievements = (userId?: string, options?: FirestoreQueryOptions
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastDoc, setLastDoc] = useState<any>(null);
   const { user: authUser } = useAuth();
 
   const targetUserId = userId || authUser?.uid;
+  const pageSize = options?.limit || 10;
+
+  const fetchAchievements = useCallback(async (startAfterDoc?: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const queryOptions: FirestoreQueryOptions = {
+        ...options,
+        limit: pageSize,
+        startAfter: startAfterDoc || undefined,
+      };
+      const result = await achievementHelpers.getByUserId(targetUserId, queryOptions);
+      if (result.success && result.data) {
+        setAchievements(prev => startAfterDoc ? [...prev, ...result.data!] : result.data!);
+        setLastDoc(result.data.length > 0 ? result.data[result.data.length - 1] : null);
+      } else {
+        setError(result.error || 'Failed to fetch achievements');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  }, [targetUserId, options, pageSize]);
 
   useEffect(() => {
     if (!targetUserId) {
       setLoading(false);
       return;
     }
+    fetchAchievements();
+  }, [targetUserId, fetchAchievements]);
 
-    setLoading(true);
-    setError(null);
-
-    const unsubscribe = realtimeHelpers.onUserAchievementsChange(targetUserId, (achievementsData) => {
-      setAchievements(achievementsData);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [targetUserId]);
+  const fetchMore = () => {
+    if (lastDoc) fetchAchievements(lastDoc);
+  };
 
   const createAchievement = useCallback(async (achievementData: Omit<Achievement, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!targetUserId) return { success: false, error: 'No user ID provided' };
@@ -160,6 +180,7 @@ export const useAchievements = (userId?: string, options?: FirestoreQueryOptions
     achievements,
     loading,
     error,
+    fetchMore,
     createAchievement,
     updateAchievement,
     deleteAchievement,
@@ -175,26 +196,46 @@ export const useParticipations = (userId?: string, options?: FirestoreQueryOptio
   const [participations, setParticipations] = useState<Participation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastDoc, setLastDoc] = useState<any>(null);
   const { user: authUser } = useAuth();
 
   const targetUserId = userId || authUser?.uid;
+  const pageSize = options?.limit || 10;
+
+  const fetchParticipations = useCallback(async (startAfterDoc?: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const queryOptions: FirestoreQueryOptions = {
+        ...options,
+        limit: pageSize,
+        startAfter: startAfterDoc || undefined,
+      };
+      const result = await participationHelpers.getByUserId(targetUserId, queryOptions);
+      if (result.success && result.data) {
+        setParticipations(prev => startAfterDoc ? [...prev, ...result.data!] : result.data!);
+        setLastDoc(result.data.length > 0 ? result.data[result.data.length - 1] : null);
+      } else {
+        setError(result.error || 'Failed to fetch participations');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  }, [targetUserId, options, pageSize]);
 
   useEffect(() => {
     if (!targetUserId) {
       setLoading(false);
       return;
     }
+    fetchParticipations();
+  }, [targetUserId, fetchParticipations]);
 
-    setLoading(true);
-    setError(null);
-
-    const unsubscribe = realtimeHelpers.onUserParticipationsChange(targetUserId, (participationsData) => {
-      setParticipations(participationsData);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [targetUserId]);
+  const fetchMore = () => {
+    if (lastDoc) fetchParticipations(lastDoc);
+  };
 
   const createParticipation = useCallback(async (participationData: Omit<Participation, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!targetUserId) return { success: false, error: 'No user ID provided' };
@@ -249,6 +290,7 @@ export const useParticipations = (userId?: string, options?: FirestoreQueryOptio
     participations,
     loading,
     error,
+    fetchMore,
     createParticipation,
     updateParticipation,
     deleteParticipation,
@@ -264,26 +306,46 @@ export const useProjects = (userId?: string, options?: FirestoreQueryOptions) =>
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastDoc, setLastDoc] = useState<any>(null);
   const { user: authUser } = useAuth();
 
   const targetUserId = userId || authUser?.uid;
+  const pageSize = options?.limit || 10;
+
+  const fetchProjects = useCallback(async (startAfterDoc?: any) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const queryOptions: FirestoreQueryOptions = {
+        ...options,
+        limit: pageSize,
+        startAfter: startAfterDoc || undefined,
+      };
+      const result = await projectHelpers.getByUserId(targetUserId, queryOptions);
+      if (result.success && result.data) {
+        setProjects(prev => startAfterDoc ? [...prev, ...result.data!] : result.data!);
+        setLastDoc(result.data.length > 0 ? result.data[result.data.length - 1] : null);
+      } else {
+        setError(result.error || 'Failed to fetch projects');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  }, [targetUserId, options, pageSize]);
 
   useEffect(() => {
     if (!targetUserId) {
       setLoading(false);
       return;
     }
+    fetchProjects();
+  }, [targetUserId, fetchProjects]);
 
-    setLoading(true);
-    setError(null);
-
-    const unsubscribe = realtimeHelpers.onUserProjectsChange(targetUserId, (projectsData) => {
-      setProjects(projectsData);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [targetUserId]);
+  const fetchMore = () => {
+    if (lastDoc) fetchProjects(lastDoc);
+  };
 
   const createProject = useCallback(async (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!targetUserId) return { success: false, error: 'No user ID provided' };
@@ -338,6 +400,7 @@ export const useProjects = (userId?: string, options?: FirestoreQueryOptions) =>
     projects,
     loading,
     error,
+    fetchMore,
     createProject,
     updateProject,
     deleteProject,

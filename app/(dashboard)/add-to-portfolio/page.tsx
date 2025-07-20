@@ -62,11 +62,11 @@ export default function AddToPortfolioPage() {
     title: string;
   } | null>(null);
 
-  const handleAchievementSubmit = async (data: any) => {
+  const handleAchievementSubmit = async (data: unknown) => {
     setIsSubmitting(true);
     try {
       await addAchievement(data);
-      setSuccessData({ type: 'achievement', title: data.title });
+      setSuccessData({ type: 'achievement', title: (data as any).title });
       setShowSuccess(true);
     } catch (error) {
       console.error('Error adding achievement:', error);
@@ -76,11 +76,11 @@ export default function AddToPortfolioPage() {
     }
   };
 
-  const handleParticipationSubmit = async (data: any) => {
+  const handleParticipationSubmit = async (data: unknown) => {
     setIsSubmitting(true);
     try {
       await addParticipation(data);
-      setSuccessData({ type: 'participation', title: data.title });
+      setSuccessData({ type: 'participation', title: (data as any).title });
       setShowSuccess(true);
     } catch (error) {
       console.error('Error adding participation:', error);
@@ -90,11 +90,11 @@ export default function AddToPortfolioPage() {
     }
   };
 
-  const handleProjectSubmit = async (data: any) => {
+  const handleProjectSubmit = async (data: unknown) => {
     setIsSubmitting(true);
     try {
       await addProject(data);
-      setSuccessData({ type: 'project', title: data.name });
+      setSuccessData({ type: 'project', title: (data as any).name });
       setShowSuccess(true);
     } catch (error) {
       console.error('Error adding project:', error);
@@ -137,7 +137,7 @@ export default function AddToPortfolioPage() {
             </h1>
             
             <p className="text-lg text-muted-foreground mb-8">
-              Your {successData.type} "{successData.title}" has been added to your portfolio.
+              Your {successData.type} &quot;{successData.title}&quot; has been added to your portfolio.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -173,7 +173,7 @@ export default function AddToPortfolioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-[#121212] text-white font-sans p-6" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="space-y-4">
@@ -199,23 +199,26 @@ export default function AddToPortfolioPage() {
         </div>
 
         {/* Tab Navigation */}
-        <Card className="p-2">
-          <div className="flex gap-2">
+        <Card className="p-4 bg-[#181A16] border-none rounded-xl shadow-[0_0_25px_rgba(0,255,255,0.1)]">
+          <div className="flex flex-col sm:flex-row gap-6">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "flex-1 flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                  "flex-1 flex items-start gap-3 px-6 py-5 rounded-2xl transition-all duration-200 border border-transparent group focus:outline-none",
                   activeTab === tab.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-[#101212] text-[#00fff7] shadow-[0_0_16px_2px_rgba(0,255,255,0.25)] border-[#00fff7] z-10"
+                    : "bg-[#181A16] text-white/90 hover:text-[#00fff7] hover:border-[#00fff7] border-[#23272a] opacity-90"
                 )}
+                tabIndex={0}
+                aria-current={activeTab === tab.id}
+                aria-label={tab.label}
               >
-                {tab.icon}
+                <div className={cn("mt-1", activeTab === tab.id ? "text-[#00fff7]" : "text-white/80 group-hover:text-[#00fff7]")}>{tab.icon}</div>
                 <div className="text-left">
-                  <div className="font-medium">{tab.label}</div>
-                  <div className="text-xs opacity-80 hidden sm:block">
+                  <div className={cn("font-bold text-lg", activeTab === tab.id ? "text-[#00fff7]" : "text-white/90 group-hover:text-[#00fff7]")}>{tab.label}</div>
+                  <div className="text-xs opacity-80 mt-1">
                     {tab.description}
                   </div>
                 </div>
@@ -229,30 +232,31 @@ export default function AddToPortfolioPage() {
           {activeTab === 'achievement' && (
             <AchievementForm
               onSubmit={handleAchievementSubmit}
-              onCancel={() => router.back()}
+              onCancel={() => {}}
               isLoading={isSubmitting}
+              resetOnCancel={true}
             />
           )}
-          
           {activeTab === 'participation' && (
             <ParticipationForm
               onSubmit={handleParticipationSubmit}
-              onCancel={() => router.back()}
+              onCancel={() => {}}
               isLoading={isSubmitting}
+              resetOnCancel={true}
             />
           )}
-          
           {activeTab === 'project' && (
             <ProjectForm
               onSubmit={handleProjectSubmit}
-              onCancel={() => router.back()}
+              onCancel={() => {}}
               isLoading={isSubmitting}
+              resetOnCancel={true}
             />
           )}
         </div>
 
         {/* Quick Navigation */}
-        <Card className="p-6">
+        <Card className="p-6 bg-[#181A16] border-none rounded-xl shadow-[0_0_25px_rgba(0,255,255,0.1)]">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             Quick Navigation
           </h3>

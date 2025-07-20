@@ -28,20 +28,19 @@ interface ProjectFormProps {
   isLoading?: boolean;
 }
 
-export const ProjectForm: React.FC<ProjectFormProps> = ({
+export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean }> = ({
   initialData,
   onSubmit,
   onCancel,
-  isLoading = false
+  isLoading = false,
+  resetOnCancel = false
 }) => {
-  const { uploadFile, uploadProgress, isUploading } = useCloudinary();
+  const { uploadProjectBanner, uploadProgress, isUploading } = useCloudinary();
   
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     description: initialData?.description || '',
-    bannerImageUrl: initialData?.bannerImageUrl || '',
     githubUrl: initialData?.githubUrl || '',
-    liveUrl: initialData?.liveUrl || '',
     isSolo: initialData?.isSolo ?? true,
     teamMembers: initialData?.teamMembers || [],
     technologies: initialData?.technologies || [],
@@ -81,10 +80,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
       newErrors.githubUrl = 'Please enter a valid GitHub URL';
     }
 
-    if (formData.liveUrl && !isValidUrl(formData.liveUrl)) {
-      newErrors.liveUrl = 'Please enter a valid URL';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -111,8 +106,15 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
     }
 
     const projectData = {
-      ...formData,
-      teamMembers: formData.isSolo ? [] : formData.teamMembers
+      name: formData.name,
+      description: formData.description,
+      githubUrl: formData.githubUrl,
+      isSolo: formData.isSolo,
+      teamMembers: formData.isSolo ? [] : formData.teamMembers,
+      technologies: formData.technologies,
+      tags: formData.tags,
+      userId: '', // Placeholder, should be set by backend/parent
+      updatedAt: new Date(),
     };
 
     try {
@@ -122,10 +124,26 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
     }
   };
 
+  const handleReset = () => {
+    setFormData({
+      name: initialData?.name || '',
+      description: initialData?.description || '',
+      githubUrl: initialData?.githubUrl || '',
+      isSolo: initialData?.isSolo ?? true,
+      teamMembers: initialData?.teamMembers || [],
+      technologies: initialData?.technologies || [],
+      tags: initialData?.tags || []
+    });
+    setErrors({});
+    setNewTag('');
+    setNewTechnology('');
+    setNewTeamMember({ name: '', role: '', linkedin: '', github: '' });
+  };
+
   const handleImageUpload = async (file: File) => {
     try {
-      const url = await uploadFile(file, 'project-banners');
-      setFormData(prev => ({ ...prev, bannerImageUrl: url }));
+      const result = await uploadProjectBanner(file);
+      // setFormData(prev => ({ ...prev, bannerImageUrl: result.url })); // Removed
     } catch (error) {
       console.error('Error uploading image:', error);
     }
@@ -184,390 +202,203 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Card className="p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
-            <Code className="h-5 w-5 text-accent-foreground" />
+      <Card className="p-8 bg-[#181A16] border-none rounded-xl shadow-[0_0_25px_rgba(0,255,255,0.1)]">
+        <div className="flex flex-col sm:flex-row items-center gap-3 mb-8">
+          <div className="w-10 h-10 bg-[#00fff7]/10 rounded-full flex items-center justify-center">
+            <Code className="h-5 w-5 text-[#00fff7]" />
           </div>
-          <h2 className="text-2xl font-heading font-bold text-foreground">
+          <h2 className="text-2xl font-heading font-bold text-[#7fffd4]" style={{ textShadow: '0 0 10px #7fffd4, 0 0 20px #7fffd4' }}>
             {initialData ? 'Edit Project' : 'Add New Project'}
           </h2>
         </div>
-
-        {/* Basic Information */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Project Name *
-            </label>
-            <Input
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g., E-Commerce Platform"
-              className={cn(errors.name && "border-destructive")}
-            />
-            {errors.name && (
-              <p className="text-sm text-destructive mt-1">{errors.name}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Description * ({formData.description.length}/500)
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Describe your project, its features, and what you learned..."
-              rows={4}
-              maxLength={500}
-              className={cn(
-                "w-full px-3 py-2 bg-card border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent resize-none",
-                errors.description && "border-destructive"
-              )}
-            />
-            {errors.description && (
-              <p className="text-sm text-destructive mt-1">{errors.description}</p>
-            )}
-          </div>
-        </div>
-
-        {/* Banner Image Upload */}
-        <div className="space-y-4 mt-6">
-          <div className="flex items-center gap-2">
-            <ImageIcon className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Banner Image</span>
-          </div>
-          
-          <div className="space-y-4">
-            {formData.bannerImageUrl && (
-              <div className="relative h-48 bg-muted rounded-lg overflow-hidden">
-                <Image
-                  src={formData.bannerImageUrl}
-                  alt="Project banner"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-black/20"></div>
-              </div>
-            )}
-            
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-              <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground mb-2">
-                Upload project banner (JPG, PNG, WebP)
-              </p>
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png,.webp"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    handleImageUpload(file);
-                  }
-                }}
-                className="hidden"
-                id="banner-upload"
-                disabled={isUploading}
-              />
-              <label
-                htmlFor="banner-upload"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors cursor-pointer disabled:opacity-50"
-              >
-                {isUploading ? 'Uploading...' : 'Choose Image'}
-              </label>
-              
-              {isUploading && uploadProgress > 0 && (
-                <div className="mt-2">
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div
-                      className="bg-accent-foreground h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{uploadProgress}%</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Project Links */}
-        <div className="space-y-4 mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Left column */}
+          <div className="flex-1 space-y-6">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                GitHub Repository
-              </label>
-              <div className="relative">
-                <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={formData.githubUrl}
-                  onChange={(e) => setFormData(prev => ({ ...prev, githubUrl: e.target.value }))}
-                  placeholder="https://github.com/username/repo"
-                  className={cn("pl-10", errors.githubUrl && "border-destructive")}
-                />
-              </div>
-              {errors.githubUrl && (
-                <p className="text-sm text-destructive mt-1">{errors.githubUrl}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Live Demo URL
-              </label>
-              <div className="relative">
-                <ExternalLink className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={formData.liveUrl}
-                  onChange={(e) => setFormData(prev => ({ ...prev, liveUrl: e.target.value }))}
-                  placeholder="https://your-project.com"
-                  className={cn("pl-10", errors.liveUrl && "border-destructive")}
-                />
-              </div>
-              {errors.liveUrl && (
-                <p className="text-sm text-destructive mt-1">{errors.liveUrl}</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Technologies */}
-        <div className="space-y-4 mt-6">
-          <div className="flex items-center gap-2">
-            <Code className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Technologies</span>
-          </div>
-          
-          <div className="space-y-3">
-            {formData.technologies.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {formData.technologies.map((tech, index) => (
-                  <span
-                    key={index}
-                    className="flex items-center gap-1 px-3 py-1 bg-accent/10 text-accent-foreground border border-accent/20 rounded-full text-sm"
-                  >
-                    {tech}
-                    <button
-                      type="button"
-                      onClick={() => removeTechnology(tech)}
-                      className="hover:text-accent-foreground/80"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-            
-            <div className="flex gap-2">
+              <label className="block text-base font-semibold text-white mb-2">Project Name *</label>
               <Input
-                value={newTechnology}
-                onChange={(e) => setNewTechnology(e.target.value)}
-                placeholder="Add a technology"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTechnology())}
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Project Name"
+                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.name && 'border-destructive')}
               />
-              <Button
-                type="button"
-                onClick={addTechnology}
-                disabled={!newTechnology.trim()}
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add
-              </Button>
+              {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
             </div>
-          </div>
-        </div>
-
-        {/* Solo vs Team */}
-        <div className="space-y-4 mt-6">
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Project Type
-            </label>
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={formData.isSolo}
-                  onChange={() => setFormData(prev => ({ ...prev, isSolo: true, teamMembers: [] }))}
-                  className="text-accent focus:ring-accent"
-                />
-                <User className="h-4 w-4" />
-                <span>Solo Project</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  checked={!formData.isSolo}
-                  onChange={() => setFormData(prev => ({ ...prev, isSolo: false }))}
-                  className="text-accent focus:ring-accent"
-                />
-                <Users className="h-4 w-4" />
-                <span>Team Project</span>
-              </label>
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Description *</label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                placeholder="Describe your project, its features, and what you learned..."
+                rows={4}
+                maxLength={500}
+                className={cn('w-full px-3 py-2 bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium resize-none', errors.description && 'border-destructive')}
+              />
+              {errors.description && <p className="text-xs text-destructive mt-1">{errors.description}</p>}
             </div>
-          </div>
-
-          {/* Team Members */}
-          {!formData.isSolo && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-foreground">Team Members</span>
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Technologies</label>
+              <div className="flex gap-2">
+                <Input
+                  value={newTechnology}
+                  onChange={(e) => setNewTechnology(e.target.value)}
+                  placeholder="Add a technology"
+                  className="bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTechnology())}
+                />
+                <Button type="button" onClick={addTechnology} disabled={!newTechnology.trim()} className="gap-2 bg-[#00fff7] text-black rounded-full px-4 py-2 font-bold">+
+                </Button>
               </div>
-              
-              {formData.teamMembers.length > 0 && (
-                <div className="space-y-2">
-                  {formData.teamMembers.map((member, index) => (
-                    <div key={index} className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
-                      <div className="flex-1">
-                        <p className="font-medium text-foreground">{member.name}</p>
-                        {member.role && (
-                          <p className="text-sm text-muted-foreground">{member.role}</p>
-                        )}
-                      </div>
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => removeTeamMember(index)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
+              {formData.technologies.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.technologies.map((tech, index) => (
+                    <span key={index} className="flex items-center gap-1 px-3 py-1 bg-[#00fff7]/10 text-[#00fff7] border border-[#00fff7]/20 rounded-full text-sm">
+                      {tech}
+                      <button type="button" onClick={() => removeTechnology(tech)} className="hover:text-[#00fff7]/80">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
                   ))}
                 </div>
               )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border border-border rounded-lg">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    Name *
-                  </label>
-                  <Input
-                    value={newTeamMember.name}
-                    onChange={(e) => setNewTeamMember(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Team member name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    Role
-                  </label>
-                  <Input
-                    value={newTeamMember.role}
-                    onChange={(e) => setNewTeamMember(prev => ({ ...prev, role: e.target.value }))}
-                    placeholder="e.g., Frontend Developer"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    LinkedIn
-                  </label>
-                  <Input
-                    value={newTeamMember.linkedin}
-                    onChange={(e) => setNewTeamMember(prev => ({ ...prev, linkedin: e.target.value }))}
-                    placeholder="LinkedIn profile URL"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    GitHub
-                  </label>
-                  <Input
-                    value={newTeamMember.github}
-                    onChange={(e) => setNewTeamMember(prev => ({ ...prev, github: e.target.value }))}
-                    placeholder="GitHub profile URL"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Button
-                    type="button"
-                    onClick={addTeamMember}
-                    disabled={!newTeamMember.name.trim()}
-                    className="gap-2"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add Team Member
-                  </Button>
-                </div>
+            </div>
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Tags</label>
+              <div className="flex gap-2">
+                <Input
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  placeholder="Add a tag"
+                  className="bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
+                  onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+                />
+                <Button type="button" onClick={addTag} disabled={!newTag.trim()} className="gap-2 bg-[#00fff7] text-black rounded-full px-4 py-2 font-bold">+
+                </Button>
               </div>
-              
-              {errors.teamMembers && (
-                <p className="text-sm text-destructive">{errors.teamMembers}</p>
+              {formData.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {formData.tags.map((tag, index) => (
+                    <span key={index} className="flex items-center gap-1 px-3 py-1 bg-[#00fff7]/10 text-[#00fff7] border border-[#00fff7]/20 rounded-full text-sm">
+                      {tag}
+                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-[#00fff7]/80">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
               )}
             </div>
-          )}
-        </div>
-
-        {/* Tags */}
-        <div className="space-y-4 mt-6">
-          <div className="flex items-center gap-2">
-            <Tag className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Tags</span>
           </div>
-          
-          <div className="space-y-3">
-            {formData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {formData.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="flex items-center gap-1 px-3 py-1 bg-muted text-muted-foreground rounded-full text-sm"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="hover:text-muted-foreground/80"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                ))}
+          {/* Divider */}
+          <div className="hidden md:block w-px bg-[#00fff7] mx-4" />
+          {/* Right column */}
+          <div className="flex-1 space-y-6">
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">GitHub Repository</label>
+              <Input
+                value={formData.githubUrl}
+                onChange={(e) => setFormData(prev => ({ ...prev, githubUrl: e.target.value }))}
+                placeholder="https://github.com/username/repo"
+                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.githubUrl && 'border-destructive')}
+              />
+              {errors.githubUrl && <p className="text-xs text-destructive mt-1">{errors.githubUrl}</p>}
+            </div>
+            <div>
+              <label className="block text-base font-semibold text-white mb-2">Project Type</label>
+              <div className="flex gap-6">
+                <label className="flex items-center gap-2 text-white">
+                  <input
+                    type="radio"
+                    checked={formData.isSolo}
+                    onChange={() => setFormData(prev => ({ ...prev, isSolo: true, teamMembers: [] }))}
+                    className="accent-[#00fff7] w-5 h-5 focus:ring-2 focus:ring-[#00fff7] border-none"
+                  />
+                  Solo Project
+                </label>
+                <label className="flex items-center gap-2 text-white">
+                  <input
+                    type="radio"
+                    checked={!formData.isSolo}
+                    onChange={() => setFormData(prev => ({ ...prev, isSolo: false }))}
+                    className="accent-[#00fff7] w-5 h-5 focus:ring-2 focus:ring-[#00fff7] border-none"
+                  />
+                  Team Project
+                </label>
+              </div>
+            </div>
+            {/* Team Members - only show if Team is selected */}
+            {!formData.isSolo && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-[#00fff7]" />
+                  <span className="text-base font-medium text-white">Team Members</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-[#181A16] rounded-lg">
+                  <div>
+                    <label className="block text-base font-medium text-white mb-1">Name *</label>
+                    <Input
+                      value={newTeamMember.name}
+                      onChange={(e) => setNewTeamMember(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="Team member name"
+                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-base font-medium text-white mb-1">Role</label>
+                    <Input
+                      value={newTeamMember.role}
+                      onChange={(e) => setNewTeamMember(prev => ({ ...prev, role: e.target.value }))}
+                      placeholder="e.g., Frontend Developer"
+                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-base font-medium text-white mb-1">LinkedIn</label>
+                    <Input
+                      value={newTeamMember.linkedin}
+                      onChange={(e) => setNewTeamMember(prev => ({ ...prev, linkedin: e.target.value }))}
+                      placeholder="LinkedIn profile URL"
+                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-base font-medium text-white mb-1">GitHub</label>
+                    <Input
+                      value={newTeamMember.github}
+                      onChange={(e) => setNewTeamMember(prev => ({ ...prev, github: e.target.value }))}
+                      placeholder="GitHub profile URL"
+                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Button type="button" onClick={addTeamMember} disabled={!newTeamMember.name.trim()} className="gap-2 bg-[#00fff7] text-black rounded-full px-4 py-2 font-bold">
+                      <Plus className="h-4 w-4" />
+                      Add Team Member
+                    </Button>
+                  </div>
+                </div>
+                {errors.teamMembers && <p className="text-sm text-destructive">{errors.teamMembers}</p>}
               </div>
             )}
-            
-            <div className="flex gap-2">
-              <Input
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                placeholder="Add a tag"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-              />
-              <Button
-                type="button"
-                onClick={addTag}
-                disabled={!newTag.trim()}
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add
-              </Button>
-            </div>
           </div>
         </div>
-
         {/* Form Actions */}
-        <div className="flex items-center justify-end gap-4 pt-6 border-t border-border">
+        <div className="flex justify-between mt-8">
           <Button
             type="button"
             variant="outline"
-            onClick={onCancel}
+            onClick={resetOnCancel ? handleReset : onCancel}
+            className="w-32 py-3 rounded-lg font-bold text-lg bg-[#23272a] text-white border-none"
             disabled={isLoading}
           >
-            Cancel
+            Reset
           </Button>
           <Button
             type="submit"
-            disabled={isLoading || isUploading}
-            className="gap-2"
+            disabled={isLoading}
+            className="w-32 py-3 rounded-lg font-bold text-lg bg-[#7c3aed] text-white shadow-[0_0_12px_rgba(124,58,237,0.7)] hover:bg-[#a78bfa] border-none"
           >
-            {isLoading ? 'Saving...' : (initialData ? 'Update Project' : 'Add Project')}
+            {isLoading ? 'Saving...' : (initialData ? 'Update Project' : 'Submit')}
           </Button>
         </div>
       </Card>

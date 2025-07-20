@@ -14,8 +14,34 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "CheckDisOut - Achievement Aggregator",
-  description: "Track and showcase your achievements, participations, and projects",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  title: {
+    default: 'CheckDisOut - Achievement Aggregator',
+    template: '%s | CheckDisOut',
+  },
+  description: 'Track and showcase your achievements, participations, and projects',
+  openGraph: {
+    title: 'CheckDisOut - Achievement Aggregator',
+    description: 'Track and showcase your achievements, participations, and projects',
+    url: process.env.NEXT_PUBLIC_APP_URL,
+    siteName: 'CheckDisOut',
+    images: [
+      {
+        url: '/public/globe.svg',
+        width: 1200,
+        height: 630,
+        alt: 'CheckDisOut',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  icons: {
+    icon: '/',
+    shortcut: '/',
+    apple: '/',
+  },
+  robots: 'index, follow',
 };
 
 export default function RootLayout({
