@@ -220,7 +220,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="Project Name"
-                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.name && 'border-destructive')}
+                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium px-4 py-3', errors.name && 'border-destructive')}
               />
               {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
             </div>
@@ -232,7 +232,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                 placeholder="Describe your project, its features, and what you learned..."
                 rows={4}
                 maxLength={500}
-                className={cn('w-full px-3 py-2 bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium resize-none', errors.description && 'border-destructive')}
+                className={cn('w-full px-4 py-4 bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium resize-none', errors.description && 'border-destructive')}
               />
               {errors.description && <p className="text-xs text-destructive mt-1">{errors.description}</p>}
             </div>
@@ -243,7 +243,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                   value={newTechnology}
                   onChange={(e) => setNewTechnology(e.target.value)}
                   placeholder="Add a technology"
-                  className="bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
+                  className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)]"
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTechnology())}
                 />
                 <Button type="button" onClick={addTechnology} disabled={!newTechnology.trim()} className="gap-2 bg-[#00fff7] text-black rounded-full px-4 py-2 font-bold">+
@@ -269,7 +269,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
                   placeholder="Add a tag"
-                  className="bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
+                  className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)]"
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                 />
                 <Button type="button" onClick={addTag} disabled={!newTag.trim()} className="gap-2 bg-[#00fff7] text-black rounded-full px-4 py-2 font-bold">+
@@ -299,7 +299,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                 value={formData.githubUrl}
                 onChange={(e) => setFormData(prev => ({ ...prev, githubUrl: e.target.value }))}
                 placeholder="https://github.com/username/repo"
-                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.githubUrl && 'border-destructive')}
+                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium px-4 py-3', errors.githubUrl && 'border-destructive')}
               />
               {errors.githubUrl && <p className="text-xs text-destructive mt-1">{errors.githubUrl}</p>}
             </div>
@@ -340,7 +340,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                       value={newTeamMember.name}
                       onChange={(e) => setNewTeamMember(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="Team member name"
-                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                      className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)]"
                     />
                   </div>
                   <div>
@@ -349,7 +349,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                       value={newTeamMember.role}
                       onChange={(e) => setNewTeamMember(prev => ({ ...prev, role: e.target.value }))}
                       placeholder="e.g., Frontend Developer"
-                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                      className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)]"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -358,7 +358,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                       value={newTeamMember.linkedin}
                       onChange={(e) => setNewTeamMember(prev => ({ ...prev, linkedin: e.target.value }))}
                       placeholder="LinkedIn profile URL"
-                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                      className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)]"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -367,7 +367,7 @@ export const ProjectForm: React.FC<ProjectFormProps & { resetOnCancel?: boolean 
                       value={newTeamMember.github}
                       onChange={(e) => setNewTeamMember(prev => ({ ...prev, github: e.target.value }))}
                       placeholder="GitHub profile URL"
-                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                      className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)]"
                     />
                   </div>
                   <div className="md:col-span-2">

@@ -10,7 +10,7 @@ import { useAchievements } from '@/lib/hooks/useFirestore';
 
 export default function AchievementsPage() {
   const { achievements: contextAchievements, achievementsLoading, achievementsError } = useUserData();
-  const { updateAchievement } = useAchievements();
+  const { updateAchievement, deleteAchievement } = useAchievements();
   const [achievements, setAchievements] = useState(contextAchievements);
   const [searchTerm, setSearchTerm] = useState('');
   const [eventTypeFilter, setEventTypeFilter] = useState<'all' | 'online' | 'offline'>('all');
@@ -40,8 +40,17 @@ export default function AchievementsPage() {
     await updateAchievement(id, updatedData);
   };
 
-  const handleDelete = (id: string) => {
-    console.log('Delete achievement:', id);
+  const handleDelete = async (id: string) => {
+    try {
+      const result = await deleteAchievement(id);
+      if (result.success) {
+        setAchievements(prev => prev.filter(a => a.id !== id));
+      } else {
+        console.error('Failed to delete achievement:', result.error);
+      }
+    } catch (error) {
+      console.error('Error deleting achievement:', error);
+    }
   };
 
   const handleShare = (id: string) => {

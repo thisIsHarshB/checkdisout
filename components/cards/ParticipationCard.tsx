@@ -5,6 +5,7 @@ import { Participation, TeamMember } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { DeleteModal } from '@/components/ui/DeleteModal';
 import { 
   Users, 
   User, 
@@ -37,6 +38,8 @@ export const ParticipationCard: React.FC<ParticipationCardProps> = ({
   className
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editedData, setEditedData] = useState({
     title: participation.title || '',
     eventName: participation.eventName || '',
@@ -90,6 +93,20 @@ export const ParticipationCard: React.FC<ParticipationCardProps> = ({
       certificateUrl: participation.certificateUrl || '',
     });
     setIsEditing(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!onDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await onDelete(participation.id);
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error('Error deleting participation:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const formatDate = (date: Date) => {

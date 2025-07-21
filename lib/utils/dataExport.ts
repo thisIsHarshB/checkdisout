@@ -1,19 +1,29 @@
 import { User, Achievement, Participation, Project } from '@/lib/types';
+import { userHelpers, achievementHelpers, participationHelpers, projectHelpers } from '@/lib/firebase/firestore';
 
 export async function exportUserData(userId: string) {
-  // Fetch user data from Firestore (pseudo-code, replace with real fetches)
-  const user: User = await fetchUser(userId);
-  const achievements: Achievement[] = await fetchAchievements(userId);
-  const participations: Participation[] = await fetchParticipations(userId);
-  const projects: Project[] = await fetchProjects(userId);
+  try {
+    // Fetch user data from Firestore
+    const userResult = await userHelpers.getById(userId);
+    const achievementsResult = await achievementHelpers.getByUserId(userId);
+    const participationsResult = await participationHelpers.getByUserId(userId);
+    const projectsResult = await projectHelpers.getByUserId(userId);
 
-  const data = {
-    user,
-    achievements,
-    participations,
-    projects,
-  };
-  return data;
+    if (!userResult.success || !achievementsResult.success || !participationsResult.success || !projectsResult.success) {
+      throw new Error('Failed to fetch user data');
+    }
+
+    const data = {
+      user: userResult.data,
+      achievements: achievementsResult.data || [],
+      participations: participationsResult.data || [],
+      projects: projectsResult.data || [],
+    };
+    return data;
+  } catch (error) {
+    console.error('Error exporting user data:', error);
+    throw error;
+  }
 }
 
 export function downloadJSON(data: any, filename = 'export.json') {
@@ -26,5 +36,4 @@ export function downloadJSON(data: any, filename = 'export.json') {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-}
-// Note: fetchUser, fetchAchievements, fetchParticipations, fetchProjects should be implemented using Firestore queries or hooks. 
+} 

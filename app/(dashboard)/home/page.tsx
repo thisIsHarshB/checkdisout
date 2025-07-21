@@ -4,7 +4,7 @@ import React from 'react';
 import { useUserData } from '@/lib/context/UserDataContext';
 import { TextAnimation, RotatingText } from '@/components/animations/TextAnimation';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import Button from '@/components/ui/Button';
 import { Trophy, Users, Code, Calendar, MapPin, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -51,18 +51,12 @@ export default function HomePage() {
             <TextAnimation type="slide-up" delay={200}>
               <h1 className="text-4xl lg:text-5xl font-heading font-bold text-foreground">
                 Hello, I'm{' '}
-                <span className="text-primary">{user.displayName}</span>
+                <span className="text-primary">{user.name}</span>
               </h1>
             </TextAnimation>
 
             <TextAnimation type="slide-up" delay={400}>
               <div className="flex items-center gap-4 text-muted-foreground">
-                {user.age && (
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{user.age} years old</span>
-                  </div>
-                )}
                 {user.location && (
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
@@ -113,10 +107,10 @@ export default function HomePage() {
           <TextAnimation type="bounce-in" delay={300}>
             <div className="flex justify-center lg:justify-end">
               <div className="relative">
-                {user.profilePicture ? (
+                {user.profilePictureURL ? (
                   <Image
-                    src={user.profilePicture}
-                    alt={user.displayName}
+                    src={user.profilePictureURL}
+                    alt={user.name}
                     width={300}
                     height={300}
                     className="rounded-full border-4 border-primary/20 shadow-2xl"
@@ -124,7 +118,7 @@ export default function HomePage() {
                 ) : (
                   <div className="w-64 h-64 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 border-4 border-primary/20 shadow-2xl flex items-center justify-center">
                     <span className="text-6xl font-heading font-bold text-primary">
-                      {user.displayName.charAt(0).toUpperCase()}
+                      {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}
@@ -143,7 +137,7 @@ export default function HomePage() {
             </h2>
             <div className="flex flex-wrap gap-3">
               {user.skills.map((skill, index) => (
-                <TextAnimation key={skill} type="scale-in" delay={1400 + index * 100}>
+                <TextAnimation key={skill} type="bounce-in" delay={1400 + index * 100}>
                   <span className="px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-full text-sm font-medium hover:bg-primary/20 transition-colors">
                     {skill}
                   </span>
@@ -251,16 +245,16 @@ export default function HomePage() {
       )}
 
       {/* Social Links */}
-      {user.socialLinks && Object.values(user.socialLinks).some(link => link) && (
+      {(user.github || user.linkedin || user.twitter || user.website) && (
         <section className="max-w-6xl mx-auto">
           <TextAnimation type="slide-up" delay={2200}>
             <h2 className="text-3xl font-heading font-bold text-foreground mb-6">
               Connect With Me
             </h2>
             <div className="flex gap-4">
-              {user.socialLinks.linkedin && (
+              {user.linkedin && (
                 <a
-                  href={user.socialLinks.linkedin}
+                  href={user.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
@@ -270,9 +264,9 @@ export default function HomePage() {
                   </svg>
                 </a>
               )}
-              {user.socialLinks.github && (
+              {user.github && (
                 <a
-                  href={user.socialLinks.github}
+                  href={user.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 bg-gray-800 text-white rounded-full hover:bg-gray-900 transition-colors"
@@ -282,9 +276,9 @@ export default function HomePage() {
                   </svg>
                 </a>
               )}
-              {user.socialLinks.twitter && (
+              {user.twitter && (
                 <a
-                  href={user.socialLinks.twitter}
+                  href={user.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 bg-blue-400 text-white rounded-full hover:bg-blue-500 transition-colors"
@@ -294,9 +288,9 @@ export default function HomePage() {
                   </svg>
                 </a>
               )}
-              {user.socialLinks.portfolio && (
+              {user.website && (
                 <a
-                  href={user.socialLinks.portfolio}
+                  href={user.website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors"

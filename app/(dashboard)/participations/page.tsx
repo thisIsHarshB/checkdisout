@@ -13,7 +13,7 @@ import { Participation } from '@/lib/types';
 
 export default function ParticipationsPage() {
   const { participations: contextParticipations, participationsLoading, participationsError } = useUserData();
-  const { updateParticipation } = useParticipations();
+  const { updateParticipation, deleteParticipation } = useParticipations();
   const [participations, setParticipations] = useState(contextParticipations);
   const [searchTerm, setSearchTerm] = useState('');
   const [eventTypeFilter, setEventTypeFilter] = useState<'all' | 'online' | 'offline'>('all');
@@ -35,9 +35,17 @@ export default function ParticipationsPage() {
     await updateParticipation(id, updatedData);
   };
 
-  const handleDelete = (id: string) => {
-    // TODO: Implement delete functionality
-    console.log('Delete participation:', id);
+  const handleDelete = async (id: string) => {
+    try {
+      const result = await deleteParticipation(id);
+      if (result.success) {
+        setParticipations(prev => prev.filter(p => p.id !== id));
+      } else {
+        console.error('Failed to delete participation:', result.error);
+      }
+    } catch (error) {
+      console.error('Error deleting participation:', error);
+    }
   };
 
   const handleShare = (id: string) => {

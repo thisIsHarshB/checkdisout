@@ -21,6 +21,7 @@ import {
   addParticipation, 
   addProject 
 } from '@/lib/hooks/useFirestore';
+import { useAuth } from '@/lib/context/AuthContext';
 
 type TabType = 'achievement' | 'participation' | 'project';
 
@@ -54,6 +55,7 @@ const tabs: Tab[] = [
 
 export default function AddToPortfolioPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('achievement');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -61,12 +63,17 @@ export default function AddToPortfolioPage() {
     type: TabType;
     title: string;
   } | null>(null);
+  const [formKey, setFormKey] = useState(0); // <-- add key for remount
 
-  const handleAchievementSubmit = async (data: unknown) => {
+  const handleAchievementSubmit = async (data: any) => {
+    if (!user?.uid) {
+      console.error('User not authenticated');
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await addAchievement(data);
-      setSuccessData({ type: 'achievement', title: (data as any).title });
+      await addAchievement(user.uid, data);
+      setSuccessData({ type: 'achievement', title: data.title });
       setShowSuccess(true);
     } catch (error) {
       console.error('Error adding achievement:', error);
@@ -76,11 +83,15 @@ export default function AddToPortfolioPage() {
     }
   };
 
-  const handleParticipationSubmit = async (data: unknown) => {
+  const handleParticipationSubmit = async (data: any) => {
+    if (!user?.uid) {
+      console.error('User not authenticated');
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await addParticipation(data);
-      setSuccessData({ type: 'participation', title: (data as any).title });
+      await addParticipation(user.uid, data);
+      setSuccessData({ type: 'participation', title: data.title });
       setShowSuccess(true);
     } catch (error) {
       console.error('Error adding participation:', error);
@@ -90,11 +101,15 @@ export default function AddToPortfolioPage() {
     }
   };
 
-  const handleProjectSubmit = async (data: unknown) => {
+  const handleProjectSubmit = async (data: any) => {
+    if (!user?.uid) {
+      console.error('User not authenticated');
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await addProject(data);
-      setSuccessData({ type: 'project', title: (data as any).name });
+      await addProject(user.uid, data);
+      setSuccessData({ type: 'project', title: data.name });
       setShowSuccess(true);
     } catch (error) {
       console.error('Error adding project:', error);
@@ -107,6 +122,7 @@ export default function AddToPortfolioPage() {
   const handleAddAnother = () => {
     setShowSuccess(false);
     setSuccessData(null);
+    setFormKey(prev => prev + 1); // <-- increment key to remount form
     // Keep the same tab active for adding another item
   };
 
@@ -124,47 +140,46 @@ export default function AddToPortfolioPage() {
   };
 
   if (showSuccess && successData) {
+    const typeLabel = successData.type.charAt(0).toUpperCase() + successData.type.slice(1);
+    const viewAllRoute = successData.type === 'achievement' ? '/achievements' : successData.type === 'participation' ? '/participations' : '/projects';
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-2xl mx-auto">
-          <Card className="p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+      <div className="min-h-screen bg-[#121212] flex items-center justify-center p-6">
+        <div className="max-w-2xl mx-auto w-full">
+          <Card className="p-10 bg-[#181A16] border-none rounded-xl shadow-[0_0_32px_4px_rgba(0,255,255,0.18)] text-white text-center">
+            <div className="w-16 h-16 bg-[#00ffbb]/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_24px_4px_rgba(0,255,255,0.18)]">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00fff7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check w-10 h-10"><path d="M20 6 9 17l-5-5" /></svg>
             </div>
-            
-            <h1 className="text-3xl font-heading font-bold text-foreground mb-4">
+            <h1 className="text-3xl font-heading font-bold text-[#7fffd4] mb-4" style={{ textShadow: '0 0 10px #7fffd4, 0 0 20px #7fffd4' }}>
               Successfully Added!
             </h1>
-            
-            <p className="text-lg text-muted-foreground mb-8">
-              Your {successData.type} &quot;{successData.title}&quot; has been added to your portfolio.
+            <p className="text-lg text-[#bafffa] mb-8">
+              Your {typeLabel.toLowerCase()} "{successData.title}" has been added to your portfolio.
             </p>
-            
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 onClick={handleAddAnother}
-                className="gap-2"
+                className="gap-2 bg-[#00fff7] text-black font-bold rounded-lg px-6 py-3 shadow-[0_0_12px_2px_rgba(0,255,255,0.18)] hover:bg-[#7fffd4]"
               >
                 <Plus className="h-4 w-4" />
-                Add Another {successData.type.charAt(0).toUpperCase() + successData.type.slice(1)}
+                Add Another {typeLabel}
               </Button>
-              
-              <Button
-                variant="outline"
-                onClick={handleViewAll}
-                className="gap-2"
-              >
-                View All {successData.type.charAt(0).toUpperCase() + successData.type.slice(1)}s
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={handleBackToDashboard}
-                className="gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Dashboard
-              </Button>
+              <a href={viewAllRoute} className="no-underline">
+                <Button
+                  variant="outline"
+                  className="gap-2 border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg px-6 py-3"
+                >
+                  View All {typeLabel}s
+                </Button>
+              </a>
+              <a href="/dashboard" className="no-underline">
+                <Button
+                  variant="outline"
+                  className="gap-2 border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg px-6 py-3"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Dashboard
+                </Button>
+              </a>
             </div>
           </Card>
         </div>
@@ -231,6 +246,7 @@ export default function AddToPortfolioPage() {
         <div className="space-y-6">
           {activeTab === 'achievement' && (
             <AchievementForm
+              key={`achievement-${formKey}`}
               onSubmit={handleAchievementSubmit}
               onCancel={() => {}}
               isLoading={isSubmitting}
@@ -239,6 +255,8 @@ export default function AddToPortfolioPage() {
           )}
           {activeTab === 'participation' && (
             <ParticipationForm
+              key={`participation-${formKey}`}
+              userId={user?.uid || ''}
               onSubmit={handleParticipationSubmit}
               onCancel={() => {}}
               isLoading={isSubmitting}
@@ -247,6 +265,7 @@ export default function AddToPortfolioPage() {
           )}
           {activeTab === 'project' && (
             <ProjectForm
+              key={`project-${formKey}`}
               onSubmit={handleProjectSubmit}
               onCancel={() => {}}
               isLoading={isSubmitting}

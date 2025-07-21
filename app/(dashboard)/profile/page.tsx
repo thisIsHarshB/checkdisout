@@ -31,6 +31,8 @@ import {
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { useUser } from '@/lib/hooks/useFirestore';
+import { useAchievements, useParticipations, useProjects } from '@/lib/hooks/useFirestore';
+import { useAuth } from '@/lib/context/AuthContext';
 
 interface DropdownSection {
   id: string;
@@ -42,11 +44,17 @@ interface DropdownSection {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { user: authUser } = useAuth();
   const { user, userLoading, userError, refreshUser } = useUserData();
   const [isEditMode, setIsEditMode] = useState(false);
   const [expandedSections, setExpandedSections] = useState<string[]>(['basic-info']);
   const [isSaving, setIsSaving] = useState(false);
   const { updateUser } = useUser();
+
+  // Fetch achievements, participations, projects from Firestore
+  const { achievements, loading: achievementsLoading } = useAchievements(authUser?.uid);
+  const { participations, loading: participationsLoading } = useParticipations(authUser?.uid);
+  const { projects, loading: projectsLoading } = useProjects(authUser?.uid);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => 
@@ -59,11 +67,19 @@ export default function ProfilePage() {
   const handleProfileUpdate = async (data: any) => {
     setIsSaving(true);
     try {
-      await updateUser(data);
-      await refreshUser();
-      setIsEditMode(false);
+      const result = await updateUser(data);
+      if (result.success) {
+        await refreshUser();
+        setIsEditMode(false);
+        // Show success feedback (you can add a toast notification here if needed)
+        console.log('Profile updated successfully!');
+      } else {
+        console.error('Failed to update profile:', result.error);
+        // You can add error handling/notification here
+      }
     } catch (error) {
       console.error('Error updating profile:', error);
+      // You can add error handling/notification here
     } finally {
       setIsSaving(false);
     }
@@ -267,35 +283,37 @@ export default function ProfilePage() {
       color: 'purple',
       content: (
         <div>
-          {user.achievements && user.achievements.length > 0 ? (
+          {achievementsLoading ? (
+            <div className="text-center py-6 text-[#00fff7]">Loading achievements...</div>
+          ) : achievements && achievements.length > 0 ? (
             <div className="space-y-3">
-              {user.achievements.slice(0, 3).map((achievement) => (
-                <div key={achievement.id} className="p-3 bg-muted/50 rounded-lg">
-                  <h4 className="font-medium text-foreground">{achievement.title}</h4>
-                  <p className="text-sm text-muted-foreground">{achievement.eventName}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+              {achievements.slice(0, 3).map((achievement) => (
+                <div key={achievement.id} className="p-3 bg-[#181A16] rounded-lg">
+                  <h4 className="font-medium text-[#7fffd4]">{achievement.title}</h4>
+                  <p className="text-sm text-[#bafffa]">{achievement.eventName}</p>
+                  <p className="text-xs text-[#00fff7] mt-1">
                     {formatDate(achievement.eventDate)}
                   </p>
                 </div>
               ))}
-              {user.achievements.length > 3 && (
+              {achievements.length > 3 && (
                 <Button
                   variant="outline"
                   onClick={() => router.push('/achievements')}
-                  className="w-full"
+                  className="w-full border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg"
                 >
-                  View All Achievements ({user.achievements.length})
+                  View All Achievements ({achievements.length})
                 </Button>
               )}
             </div>
           ) : (
             <div className="text-center py-6">
-              <Trophy className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-muted-foreground">No achievements yet</p>
+              <Trophy className="h-8 w-8 text-[#00fff7] mx-auto mb-2" />
+              <p className="text-[#bafffa]">No achievements yet</p>
               <Button
                 variant="outline"
                 onClick={() => router.push('/add-to-portfolio')}
-                className="mt-2"
+                className="mt-2 border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg"
               >
                 Add Achievement
               </Button>
@@ -311,35 +329,37 @@ export default function ProfilePage() {
       color: 'blue',
       content: (
         <div>
-          {user.participations && user.participations.length > 0 ? (
+          {participationsLoading ? (
+            <div className="text-center py-6 text-[#00fff7]">Loading participations...</div>
+          ) : participations && participations.length > 0 ? (
             <div className="space-y-3">
-              {user.participations.slice(0, 3).map((participation) => (
-                <div key={participation.id} className="p-3 bg-muted/50 rounded-lg">
-                  <h4 className="font-medium text-foreground">{participation.title}</h4>
-                  <p className="text-sm text-muted-foreground">{participation.eventName}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+              {participations.slice(0, 3).map((participation) => (
+                <div key={participation.id} className="p-3 bg-[#181A16] rounded-lg">
+                  <h4 className="font-medium text-[#7fffd4]">{participation.title}</h4>
+                  <p className="text-sm text-[#bafffa]">{participation.eventName}</p>
+                  <p className="text-xs text-[#00fff7] mt-1">
                     {formatDate(participation.eventDate)}
                   </p>
                 </div>
               ))}
-              {user.participations.length > 3 && (
+              {participations.length > 3 && (
                 <Button
                   variant="outline"
                   onClick={() => router.push('/participations')}
-                  className="w-full"
+                  className="w-full border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg"
                 >
-                  View All Participations ({user.participations.length})
+                  View All Participations ({participations.length})
                 </Button>
               )}
             </div>
           ) : (
             <div className="text-center py-6">
-              <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-muted-foreground">No participations yet</p>
+              <Users className="h-8 w-8 text-[#00fff7] mx-auto mb-2" />
+              <p className="text-[#bafffa]">No participations yet</p>
               <Button
                 variant="outline"
                 onClick={() => router.push('/add-to-portfolio')}
-                className="mt-2"
+                className="mt-2 border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg"
               >
                 Add Participation
               </Button>
@@ -355,24 +375,26 @@ export default function ProfilePage() {
       color: 'purple',
       content: (
         <div>
-          {user.projects && user.projects.length > 0 ? (
+          {projectsLoading ? (
+            <div className="text-center py-6 text-[#00fff7]">Loading projects...</div>
+          ) : projects && projects.length > 0 ? (
             <div className="space-y-3">
-              {user.projects.slice(0, 3).map((project) => (
-                <div key={project.id} className="p-3 bg-muted/50 rounded-lg">
-                  <h4 className="font-medium text-foreground">{project.name}</h4>
-                  <p className="text-sm text-muted-foreground line-clamp-2">{project.description}</p>
+              {projects.slice(0, 3).map((project) => (
+                <div key={project.id} className="p-3 bg-[#181A16] rounded-lg">
+                  <h4 className="font-medium text-[#7fffd4]">{project.name}</h4>
+                  <p className="text-sm text-[#bafffa] line-clamp-2">{project.description}</p>
                   {project.technologies.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {project.technologies.slice(0, 3).map((tech, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded"
+                          className="px-2 py-1 bg-[#00fff7]/10 text-[#00fff7] text-xs rounded"
                         >
                           {tech}
                         </span>
                       ))}
                       {project.technologies.length > 3 && (
-                        <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded">
+                        <span className="px-2 py-1 bg-[#23272a] text-[#00fff7] text-xs rounded">
                           +{project.technologies.length - 3} more
                         </span>
                       )}
@@ -380,24 +402,24 @@ export default function ProfilePage() {
                   )}
                 </div>
               ))}
-              {user.projects.length > 3 && (
+              {projects.length > 3 && (
                 <Button
                   variant="outline"
                   onClick={() => router.push('/projects')}
-                  className="w-full"
+                  className="w-full border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg"
                 >
-                  View All Projects ({user.projects.length})
+                  View All Projects ({projects.length})
                 </Button>
               )}
             </div>
           ) : (
             <div className="text-center py-6">
-              <Code className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-              <p className="text-muted-foreground">No projects yet</p>
+              <Code className="h-8 w-8 text-[#00fff7] mx-auto mb-2" />
+              <p className="text-[#bafffa]">No projects yet</p>
               <Button
                 variant="outline"
                 onClick={() => router.push('/add-to-portfolio')}
-                className="mt-2"
+                className="mt-2 border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg"
               >
                 Add Project
               </Button>
@@ -410,39 +432,41 @@ export default function ProfilePage() {
 
   if (isEditMode) {
     return (
-      <div className="min-h-screen bg-background p-6">
-        <div className="max-w-4xl mx-auto">
-          <ProfileForm
-            initialData={user}
-            onSubmit={handleProfileUpdate}
-            onCancel={() => setIsEditMode(false)}
-            isLoading={isSaving}
-          />
+      <div className="min-h-screen bg-[#121212] flex items-center justify-center p-6">
+        <div className="max-w-3xl w-full mx-auto">
+          <Card className="p-8 bg-[#181A16] border-none shadow-[0_0_32px_4px_rgba(0,255,255,0.18)]">
+            <ProfileForm
+              initialData={user}
+              onSubmit={handleProfileUpdate}
+              onCancel={() => setIsEditMode(false)}
+              isLoading={isSaving}
+            />
+          </Card>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-[#121212] p-6 text-white">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-heading font-bold text-foreground">
+          <h1 className="text-4xl font-heading font-bold text-[#7fffd4]" style={{ textShadow: '0 0 10px #7fffd4, 0 0 20px #7fffd4' }}>
             Profile
           </h1>
           <div className="flex gap-3">
             <Button
               variant="outline"
               onClick={() => router.push('/export')}
-              className="gap-2"
+              className="gap-2 border-none text-[#00fff7] hover:bg-[#00fff7]/10 hover:text-[#7fffd4] font-bold rounded-lg px-6 py-3"
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-4 w-4 text-[#00fff7]" />
               Export Portfolio
             </Button>
             <Button
               onClick={() => setIsEditMode(true)}
-              className="gap-2"
+              className="gap-2 bg-[#00fff7] text-black font-bold rounded-lg px-6 py-3 shadow-[0_0_12px_2px_rgba(0,255,255,0.18)] hover:bg-[#7fffd4]"
             >
               <Edit className="h-4 w-4" />
               Edit Profile
@@ -451,13 +475,13 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Header */}
-        <Card className="p-6">
+        <Card className="p-6 bg-[#181A16] border-none">
           <div className="flex items-center gap-6">
             <div className="relative">
-              {user.profilePictureUrl ? (
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-muted">
+              {user.profilePictureURL ? (
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-[#23272a]">
                   <Image
-                    src={user.profilePictureUrl}
+                    src={user.profilePictureURL}
                     alt="Profile"
                     width={96}
                     height={96}
@@ -465,21 +489,19 @@ export default function ProfilePage() {
                   />
                 </div>
               ) : (
-                <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center">
-                  <User className="h-12 w-12 text-muted-foreground" />
+                <div className="w-24 h-24 rounded-full bg-[#23272a] flex items-center justify-center">
+                  <User className="h-12 w-12 text-[#00fff7]" />
                 </div>
               )}
             </div>
-            
             <div className="flex-1">
-              <h2 className="text-2xl font-heading font-bold text-foreground mb-2">
+              <h2 className="text-2xl font-heading font-bold text-[#7fffd4] mb-2" style={{ textShadow: '0 0 10px #7fffd4' }}>
                 {user.name || 'Your Name'}
               </h2>
-              <p className="text-muted-foreground mb-3">
+              <p className="text-[#bafffa] mb-3">
                 {user.bio || 'Add a bio to tell people about yourself'}
               </p>
-              
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-4 text-sm text-[#00fff7]">
                 {user.email && (
                   <div className="flex items-center gap-1">
                     <Mail className="h-4 w-4" />
@@ -502,43 +524,48 @@ export default function ProfilePage() {
           {dropdownSections.map((section) => (
             <Card
               key={section.id}
-              className={cn(
-                "overflow-hidden transition-all duration-200",
-                section.color === 'purple' 
-                  ? "border-purple-200 hover:border-purple-300" 
-                  : "border-blue-200 hover:border-blue-300"
-              )}
+              className="overflow-hidden transition-all duration-200 bg-[#181A16] border-none"
             >
               <button
                 onClick={() => toggleSection(section.id)}
                 className={cn(
-                  "w-full flex items-center justify-between p-4 transition-colors",
-                  section.color === 'purple'
-                    ? "bg-purple-50 hover:bg-purple-100"
-                    : "bg-blue-50 hover:bg-blue-100"
+                  "w-full flex items-center justify-between p-4 transition-colors bg-[#101212] hover:bg-[#101212]/80 border-none outline-none focus:ring-2 focus:ring-[#00fff7]",
+                  expandedSections.includes(section.id) && 'shadow-[0_0_16px_2px_rgba(0,255,255,0.18)]'
                 )}
+                style={{ boxShadow: expandedSections.includes(section.id) ? '0 0 16px 2px rgba(0,255,255,0.18)' : undefined }}
               >
                 <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "p-2 rounded-lg",
-                    section.color === 'purple'
-                      ? "bg-purple-100 text-purple-600"
-                      : "bg-blue-100 text-blue-600"
-                  )}>
+                  <div className="p-2 rounded-lg bg-[#00fff7]/10 text-[#00fff7]">
                     {section.icon}
                   </div>
-                  <h3 className="font-semibold text-foreground">{section.title}</h3>
+                  <h3 className="font-semibold text-[#7fffd4]">{section.title}</h3>
                 </div>
                 {expandedSections.includes(section.id) ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                  <ChevronUp className="h-5 w-5 text-[#00fff7]" />
                 ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                  <ChevronDown className="h-5 w-5 text-[#00fff7]" />
                 )}
               </button>
-              
               {expandedSections.includes(section.id) && (
-                <div className="p-4 border-t border-border">
-                  {section.content}
+                <div className="p-4">
+                  {/* Neon/cyan themed content for each section */}
+                  {section.id === 'qualities' && user.qualities && user.qualities.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.qualities.map((quality, index) => (
+                        <span key={index} className="px-3 py-1 bg-[#00fff7]/10 text-[#00fff7] rounded-full text-sm">
+                          {quality}
+                        </span>
+                      ))}
+                    </div>
+                  ) : section.id === 'skills' && user.skills && user.skills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {user.skills.map((skill, index) => (
+                        <span key={index} className="px-3 py-1 bg-[#00fff7]/10 text-[#00fff7] rounded-full text-sm">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  ) : section.content}
                 </div>
               )}
             </Card>

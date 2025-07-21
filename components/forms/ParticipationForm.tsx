@@ -18,12 +18,14 @@ import {
   FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Participation } from '@/lib/types';
 
 interface ParticipationFormProps {
   initialData?: Partial<Participation>;
   onSubmit: (data: Omit<Participation, 'id' | 'createdAt'>) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
+  userId: string;
 }
 
 export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCancel?: boolean }> = ({
@@ -31,9 +33,10 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
   onSubmit,
   onCancel,
   isLoading = false,
-  resetOnCancel = false
+  resetOnCancel = false,
+  userId
 }) => {
-  const { uploadFile, uploadProgress, isUploading } = useCloudinary();
+  const { uploadCertificate, uploadProgress, isUploading } = useCloudinary();
   
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
@@ -44,8 +47,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
     isSolo: initialData?.isSolo ?? true,
     teamMembers: initialData?.teamMembers || [],
     certificateUrl: initialData?.certificateUrl || '',
-    tags: initialData?.tags || [],
-    githubUrl: initialData?.githubUrl || ''
+    tags: initialData?.tags || []
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -94,7 +96,9 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
     const participationData = {
       ...formData,
       eventDate: new Date(formData.eventDate),
-      teamMembers: formData.isSolo ? [] : formData.teamMembers
+      teamMembers: formData.isSolo ? [] : formData.teamMembers,
+      updatedAt: new Date(),
+      userId: userId
     };
 
     try {
@@ -106,8 +110,8 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
 
   const handleFileUpload = async (file: File) => {
     try {
-      const url = await uploadFile(file, 'certificates');
-      setFormData(prev => ({ ...prev, certificateUrl: url }));
+      const result = await uploadCertificate(file);
+      setFormData(prev => ({ ...prev, certificateUrl: result.url }));
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -126,7 +130,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
   const removeTag = (tagToRemove: string) => {
     setFormData(prev => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag: string) => tag !== tagToRemove)
     }));
   };
 
@@ -143,7 +147,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
   const removeTeamMember = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      teamMembers: prev.teamMembers.filter((_, i) => i !== index)
+      teamMembers: prev.teamMembers.filter((_: any, i: number) => i !== index)
     }));
   };
 
@@ -157,8 +161,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
       isSolo: initialData?.isSolo ?? true,
       teamMembers: initialData?.teamMembers || [],
       certificateUrl: initialData?.certificateUrl || '',
-      tags: initialData?.tags || [],
-      githubUrl: initialData?.githubUrl || ''
+      tags: initialData?.tags || []
     });
     setErrors({});
     setNewTag('');
@@ -186,7 +189,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
                 onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                 placeholder="e.g., Attended React Conference 2024"
                 className={cn(
-                  'w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium',
+                  'w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium px-4 py-3',
                   errors.title && 'border-destructive'
                 )}
               />
@@ -198,7 +201,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
                 type="date"
                 value={formData.eventDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
-                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.eventDate && 'border-destructive')}
+                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium px-4 py-3', errors.eventDate && 'border-destructive')}
               />
               {errors.eventDate && <p className="text-xs text-destructive mt-1">{errors.eventDate}</p>}
             </div>
@@ -208,7 +211,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
                 value={formData.eventName}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventName: e.target.value }))}
                 placeholder="e.g., React Summit 2024"
-                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium', errors.eventName && 'border-destructive')}
+                className={cn('w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium px-4 py-3', errors.eventName && 'border-destructive')}
               />
               {errors.eventName && <p className="text-xs text-destructive mt-1">{errors.eventName}</p>}
             </div>
@@ -243,7 +246,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Event link or location"
-                className="w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
+                className="w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium px-4 py-3"
               />
             </div>
             <div>
@@ -288,7 +291,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
                       value={newTeamMember.name}
                       onChange={(e) => setNewTeamMember(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="Team member name"
-                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                      className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)] px-4 py-3"
                     />
                   </div>
                   <div>
@@ -297,7 +300,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
                       value={newTeamMember.role}
                       onChange={(e) => setNewTeamMember(prev => ({ ...prev, role: e.target.value }))}
                       placeholder="e.g., Frontend Developer"
-                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                      className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)] px-4 py-3"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -306,7 +309,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
                       value={newTeamMember.linkedin}
                       onChange={(e) => setNewTeamMember(prev => ({ ...prev, linkedin: e.target.value }))}
                       placeholder="LinkedIn profile URL"
-                      className="bg-transparent border-none rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full"
+                      className="bg-transparent rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium w-full shadow-[inset_0_0_12px_2px_rgba(0,255,255,0.35)] px-4 py-3"
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -325,16 +328,7 @@ export const ParticipationForm: React.FC<ParticipationFormProps & { resetOnCance
                 value={formData.certificateUrl}
                 onChange={(e) => setFormData(prev => ({ ...prev, certificateUrl: e.target.value }))}
                 placeholder="Certificate URL or upload"
-                className="w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
-              />
-            </div>
-            <div>
-              <label className="block text-base font-semibold text-white mb-2">GitHub Link</label>
-              <Input
-                value={formData.githubUrl || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, githubUrl: e.target.value }))}
-                placeholder="GitHub repository link (optional)"
-                className="w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium"
+                className="w-full min-h-[44px] bg-transparent border-2 border-[#00fff7] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#00fff7] font-medium px-4 py-3"
               />
             </div>
           </div>

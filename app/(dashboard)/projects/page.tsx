@@ -9,7 +9,7 @@ import { useProjects } from '@/lib/hooks/useFirestore';
 import { Project } from '@/lib/types';
 
 export default function ProjectsPage() {
-  const { projects, error, updateProject } = useProjects(undefined, { limit: 10 });
+  const { projects, error, updateProject, deleteProject } = useProjects(undefined, { limit: 10 });
   const [searchTerm, setSearchTerm] = useState('');
   const [technologyFilter, setTechnologyFilter] = useState('all');
 
@@ -35,9 +35,19 @@ export default function ProjectsPage() {
     await updateProject(id, updatedData);
   };
 
-  const handleDelete = (id: string) => {
-    // TODO: Implement delete functionality
-    console.log('Delete project:', id);
+  const handleDelete = async (id: string) => {
+    try {
+      const result = await deleteProject(id);
+      if (result.success) {
+        // Assuming setProjects is available in the scope or passed as a prop
+        // For now, we'll just log and rely on the hook's re-fetching
+        console.log('Project deleted:', id);
+      } else {
+        console.error('Failed to delete project:', result.error);
+      }
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    }
   };
 
   const handleShare = (id: string) => {

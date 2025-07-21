@@ -3,6 +3,7 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Achievement } from '@/lib/types'; // NOTE: Assumes this type is updated to include all new fields from your DB
 import { Card } from '@/components/ui/Card';
+import { DeleteModal } from '@/components/ui/DeleteModal';
 import { cn } from '@/lib/utils';
 import { ExternalLink } from 'lucide-react';
 
@@ -40,6 +41,8 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
 }) => {
   
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   // Expanded state to include all fields from the database
   const [editedData, setEditedData] = useState({
     title: achievement.title || '',
@@ -113,6 +116,20 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
       certificateUrl: achievement.certificateUrl || '',
     });
     setIsEditing(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!onDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await onDelete(achievement.id);
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error('Error deleting achievement:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // Helper function to render the display view for clarity
@@ -223,12 +240,22 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({
           </>
         ) : (
           <>
-            <button className="flex-1 text-white font-bold py-2.5 rounded-lg transition-all bg-red-600/90 hover:bg-red-600 shadow-[0_0_12px_rgba(239,68,68,0.7)] hover:shadow-[0_0_18px_rgba(239,68,68,0.9)]" onClick={() => onDelete && onDelete(achievement.id)}>Delete</button>
+            <button className="flex-1 text-white font-bold py-2.5 rounded-lg transition-all bg-red-600/90 hover:bg-red-600 shadow-[0_0_12px_rgba(239,68,68,0.7)] hover:shadow-[0_0_18px_rgba(239,68,68,0.9)]" onClick={() => setShowDeleteModal(true)}>Delete</button>
             <button className="flex-1 text-black font-bold py-2.5 rounded-lg transition-all bg-cyan-400 hover:bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)] hover:shadow-[0_0_18px_rgba(34,211,238,1)]" onClick={() => setIsEditing(true)}>Edit</button>
             <button className="flex-1 text-white font-bold py-2.5 rounded-lg transition-all bg-purple-600/90 hover:bg-purple-600 shadow-[0_0_12px_rgba(147,51,234,0.7)] hover:shadow-[0_0_18px_rgba(147,51,234,0.9)]" onClick={() => onShare && onShare(achievement.id)}>Share</button>
           </>
         )}
       </div>
+
+      <DeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Achievement"
+        message="Are you sure you want to delete this achievement"
+        itemName={achievement.title}
+        isLoading={isDeleting}
+      />
     </Card>
   );
 };

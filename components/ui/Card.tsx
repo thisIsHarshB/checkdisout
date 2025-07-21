@@ -21,16 +21,16 @@ interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', children, ...props }, ref) => {
     const variants = {
-      default: "bg-gray-800 border border-gray-700",
-      elevated: "bg-gray-800 border border-gray-700 shadow-lg hover:shadow-xl transition-shadow duration-200",
-      outlined: "bg-transparent border border-gray-600"
+      default: "bg-[#23272a] shadow-[0_8px_32px_rgba(0,255,255,0.15)]",
+      elevated: "bg-[#23272a] shadow-[0_8px_32px_rgba(0,255,255,0.15)] hover:shadow-[0_12px_48px_rgba(0,255,255,0.25)] transition-all duration-300",
+      outlined: "bg-[#23272a] shadow-[0_4px_16px_rgba(0,255,255,0.1)]"
     };
 
     return (
       <div
         ref={ref}
         className={cn(
-          "rounded-lg overflow-hidden",
+          "rounded-xl overflow-hidden",
           variants[variant],
           className
         )}
@@ -47,7 +47,7 @@ const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
     return (
       <div
         ref={ref}
-        className={cn("px-6 py-4 border-b border-gray-700", className)}
+        className={cn("px-6 py-4", className)}
         {...props}
       >
         {children}
@@ -75,7 +75,7 @@ const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
     return (
       <div
         ref={ref}
-        className={cn("px-6 py-4 border-t border-gray-700 bg-gray-750", className)}
+        className={cn("px-6 py-4 bg-[#1a1a1a]", className)}
         {...props}
       >
         {children}

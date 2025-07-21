@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/context/AuthContext';
 import {
   Home,
   GraduationCap,
@@ -10,7 +11,8 @@ import {
   LayoutGrid,
   FileUp,
   CirclePlus,
-  CircleUser
+  CircleUser,
+  LogOut
 } from 'lucide-react';
 
 const navIcons = [
@@ -27,6 +29,18 @@ const bottomIcons = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <div className="fixed left-0 top-0 h-full w-24 bg-[#23241e] flex flex-col items-center justify-between py-4 z-50 border-r border-black font-primary">
       <style jsx global>{`
@@ -57,8 +71,8 @@ export default function Navbar() {
           ))}
         </div>
       </div>
-      {/* Bottom: Add & Profile */}
-      <div className="flex flex-col gap-8 mb-4 w-full items-center">
+      {/* Bottom: Add & Profile & Logout */}
+      <div className="flex flex-col gap-8 mb-10 w-full items-center">
         {bottomIcons.map(({ href, icon: Icon }, i) => (
           <Link key={href} href={href} className="flex items-center justify-center w-full group">
             <Icon
@@ -68,6 +82,14 @@ export default function Navbar() {
             />
           </Link>
         ))}
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="flex items-center justify-center w-full group"
+          title="Logout"
+        >
+          <LogOut className="h-6 w-6 mx-auto transition-colors navbar-glow text-[#ff6b6b] hover:text-[#ff5252]" />
+        </button>
       </div>
     </div>
   );

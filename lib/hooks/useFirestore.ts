@@ -496,56 +496,44 @@ export const useUserStats = (userId?: string) => {
 // CONVENIENCE FUNCTIONS FOR ADD-TO-PORTFOLIO PAGE
 // ============================================================================
 
-export const addAchievement = async (data: Omit<Achievement, 'id' | 'createdAt' | 'updatedAt'>) => {
-  const { user: authUser } = useAuth();
-  if (!authUser?.uid) {
+export const addAchievement = async (userId: string, data: Omit<Achievement, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
+  if (!userId) {
     throw new Error('User not authenticated');
   }
-  
   const result = await achievementHelpers.create({
     ...data,
-    userId: authUser.uid,
+    userId,
   });
-  
   if (!result.success) {
     throw new Error(result.error || 'Failed to create achievement');
   }
-  
   return result;
 };
 
-export const addParticipation = async (data: Omit<Participation, 'id' | 'createdAt' | 'updatedAt'>) => {
-  const { user: authUser } = useAuth();
-  if (!authUser?.uid) {
+export const addParticipation = async (userId: string, data: Omit<Participation, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
+  if (!userId) {
     throw new Error('User not authenticated');
   }
-  
   const result = await participationHelpers.create({
     ...data,
-    userId: authUser.uid,
+    userId,
   });
-  
   if (!result.success) {
     throw new Error(result.error || 'Failed to create participation');
   }
-  
   return result;
 };
 
-export const addProject = async (data: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
-  const { user: authUser } = useAuth();
-  if (!authUser?.uid) {
+export const addProject = async (userId: string, data: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
+  if (!userId) {
     throw new Error('User not authenticated');
   }
-  
   const result = await projectHelpers.create({
     ...data,
-    userId: authUser.uid,
+    userId,
   });
-  
   if (!result.success) {
     throw new Error(result.error || 'Failed to create project');
   }
-  
   return result;
 }; 
