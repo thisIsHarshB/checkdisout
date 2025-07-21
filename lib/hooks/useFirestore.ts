@@ -101,7 +101,7 @@ export const useAchievements = (userId?: string, options?: FirestoreQueryOptions
         limit: pageSize,
         startAfter: startAfterDoc || undefined,
       };
-      const result = await achievementHelpers.getByUserId(targetUserId, queryOptions);
+      const result = targetUserId ? await achievementHelpers.getByUserId(targetUserId, queryOptions) : { success: false, data: [] };
       if (result.success && result.data) {
         setAchievements(prev => startAfterDoc ? [...prev, ...result.data!] : result.data!);
         setLastDoc(result.data.length > 0 ? result.data[result.data.length - 1] : null);
@@ -211,7 +211,7 @@ export const useParticipations = (userId?: string, options?: FirestoreQueryOptio
         limit: pageSize,
         startAfter: startAfterDoc || undefined,
       };
-      const result = await participationHelpers.getByUserId(targetUserId, queryOptions);
+      const result = targetUserId ? await participationHelpers.getByUserId(targetUserId, queryOptions) : { success: false, data: [] };
       if (result.success && result.data) {
         setParticipations(prev => startAfterDoc ? [...prev, ...result.data!] : result.data!);
         setLastDoc(result.data.length > 0 ? result.data[result.data.length - 1] : null);
@@ -321,7 +321,7 @@ export const useProjects = (userId?: string, options?: FirestoreQueryOptions) =>
         limit: pageSize,
         startAfter: startAfterDoc || undefined,
       };
-      const result = await projectHelpers.getByUserId(targetUserId, queryOptions);
+      const result = targetUserId ? await projectHelpers.getByUserId(targetUserId, queryOptions) : { success: false, data: [] };
       if (result.success && result.data) {
         setProjects(prev => startAfterDoc ? [...prev, ...result.data!] : result.data!);
         setLastDoc(result.data.length > 0 ? result.data[result.data.length - 1] : null);
